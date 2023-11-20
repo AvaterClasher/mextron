@@ -3,6 +3,7 @@ use crate::builder::{Worker, OUTPUT_DIR};
 use anyhow::{Ok, Result};
 use axum::Router;
 use clap::{Parser, Subcommand};
+use log::{info, warn};
 use std::{net::SocketAddr, thread, time::Duration};
 use tower_http::services::ServeDir;
 use tower_http::trace::TraceLayer;
@@ -34,6 +35,7 @@ const PUBLIC_DIR: &str = "public";
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    env_logger::init();
     let args = Cli::parse();
 
     match args.command {
@@ -45,7 +47,7 @@ async fn main() -> Result<()> {
                     let worker = Worker::new(PAGES_DIR, PUBLIC_DIR);
                     worker.rebuild().unwrap();
 
-                    println!("Watching for changes in -> {}", PAGES_DIR);
+                    info!("Watching for changes in -> {}", PAGES_DIR);
                     hotwatch
                         .watch(PAGES_DIR, move |_| {
                             worker.rebuild().unwrap();
@@ -63,7 +65,7 @@ async fn main() -> Result<()> {
                 .parse()?;
 
             let addr = SocketAddr::from(([0, 0, 0, 0], port));
-            println!("Dev server started on -> http://localhost:{}", port);
+            warn!("Dev server started on -> http://localhost:{}", port);
 
             let _ = tokio::net::TcpListener::bind(addr).await.unwrap();
             let app = Router::new().nest_service("/", ServeDir::new(OUTPUT_DIR));
