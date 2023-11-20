@@ -1,0 +1,4 @@
+{
+	"cSpell.words": ["Mextron"],
+	"rust-analyzer.linkedProjects": ["./Cargo.toml", "./Cargo.toml"]
+}
