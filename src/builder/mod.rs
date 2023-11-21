@@ -1,5 +1,7 @@
 use anyhow::{Ok, Result};
+use config::Config;
 use fs_extra::{copy_items, dir::CopyOptions};
+use handlebars::Handlebars;
 use log::{info, trace};
 use slugify::slugify;
 use std::{
@@ -10,6 +12,7 @@ use tokio::time::Instant;
 use walkdir::WalkDir;
 
 mod base;
+mod settings;
 
 pub const PAGES_DIR: &str = "pages";
 pub const PUBLIC_DIR: &str = "public";
@@ -31,35 +34,54 @@ pub struct Worker {
     pages_dir: String,
     public_dir: String,
     output_dir: String,
+    settings: settings::Settings,
 }
 
 impl Worker {
-        pub fn new(input_dir: &PathBuf) -> Self {
-            let pages_dir = input_dir
-                .join(PAGES_DIR)
-                .canonicalize()
-                .unwrap()
-                .to_str()
-                .unwrap()
-                .to_string();
-    
-            let public_dir = input_dir
-                .join(PUBLIC_DIR)
-                .canonicalize()
-                .unwrap()
-                .to_str()
-                .unwrap()
-                .to_string();
-    
-            let output_dir = OUTPUT_DIR;
-    
-            create_dir(&pages_dir).unwrap();
-            create_dir(&public_dir).unwrap();
+    pub fn new(input_dir: &PathBuf) -> Self {
+        let pages_dir = input_dir
+            .join(PAGES_DIR)
+            .canonicalize()
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .to_string();
+
+        let public_dir = input_dir
+            .join(PUBLIC_DIR)
+            .canonicalize()
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .to_string();
+
+        let output_dir = OUTPUT_DIR;
+
+        let config_file = input_dir
+            .join("Settings.toml")
+            .canonicalize()
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .to_string();
+
+        let settings: settings::Settings = Config::builder()
+            .add_source(config::File::with_name(&config_file))
+            .build()
+            .unwrap()
+            .try_deserialize()
+            .unwrap();
+
+        // println!("{:#?}", settings);
+
+        create_dir(&pages_dir).unwrap();
+        create_dir(&public_dir).unwrap();
 
         Self {
             pages_dir: pages_dir.to_string(),
             public_dir: public_dir.to_string(),
-            output_dir: output_dir.to_string()
+            output_dir: output_dir.to_string(),
+            settings,
         }
     }
 
@@ -85,6 +107,10 @@ impl Worker {
 
     pub fn get_output_dir(&self) -> &str {
         &self.output_dir
+    }
+
+    pub fn get_settings(&self) -> &settings::Settings {
+        &self.settings
     }
 
     pub fn build(&self) -> Result<()> {
@@ -114,8 +140,14 @@ impl Worker {
             let mut body = String::new();
             pulldown_cmark::html::push_html(&mut body, parser);
 
-            html.push_str(base::render_body(&body).as_str());
+            html.push_str(&base::render_article(&body).as_str());
             html.push_str(base::FOOTER);
+
+            let reg = Handlebars::new();
+            let html = reg.render_template(&html, &self.settings.site)?;
+
+            let top_navigation = base::render_links(&self.settings.site.top_navigation);
+            let html = html.replace("%%LINKS%%", &top_navigation);
 
             let html_file = file
                 .replace(&self.pages_dir, &self.output_dir)
@@ -150,4 +182,3 @@ impl Worker {
         Ok(())
     }
 }
-

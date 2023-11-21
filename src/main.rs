@@ -65,9 +65,7 @@ async fn main() -> Result<()> {
                 });
             }
 
-            let port: u16 = std::env::var("PORT")
-                .unwrap_or("3000".to_string())
-                .parse()?;
+            let port = worker.get_settings().dev.port.clone();
 
             let addr = SocketAddr::from(([0, 0, 0, 0], port));
             warn!("Dev server started on -> http://localhost:{}", port);

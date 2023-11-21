@@ -1,3 +1,5 @@
+use super::settings::Link;
+
 pub const HEADER: &str = r#"<!DOCTYPE html>
 <html lang="en">
   <head>
@@ -6,26 +8,45 @@ pub const HEADER: &str = r#"<!DOCTYPE html>
     />
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
-    <title>Hello, world!</title>
+    <title>{{title}}</title>
   </head>
+  <body>
+  <main class="container">
+  <nav>
+      <ul>
+        %%LINKS%%
+      </ul>
+  </nav>
+  <hgroup>
+    <h1>{{title}}</h1>
+    <h2>{{description}}</h2>
+  </hgroup>
 "#;
 
+pub fn render_links(links: &Vec<Link>) -> String {
+    let mut nav_links = String::from(format!(r#"<li><a href="{}">{}</a></li>"#, "/", "Home"));
 
-pub fn render_body(body: &str) -> String {
+    for link in links {
+        nav_links
+            .push_str(format!(r#"<li><a href="{}">{}</a></li>"#, link.url, link.label).as_str());
+    }
+
+    nav_links
+}
+
+pub fn render_article(body: &str) -> String {
     format!(
-        r#"  <body class="container">
-    <nav>
-        <a href="/">Home</a>
-    </nav>
-    <article id="article">
-    {}
-    </article>
-  </body>"#,
+        r#"<article>
+      <header>Page title</header>
+  {}
+  </article>"#,
         body
     )
 }
 
 pub const FOOTER: &str = r#"
+</main>
+</body>
 <footer class="container">
     <small>
       Built with <a href="https://github.com/AvaterClasher/mextron" target="_blank" rel="noopener noreferrer">Mextron</a> •
