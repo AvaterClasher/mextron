@@ -737,6 +737,7 @@ dependencies = [
  "hotwatch",
  "log",
  "pulldown-cmark",
+ "regex",
  "serde",
  "serde_json",
  "slugify",
