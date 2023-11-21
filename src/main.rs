@@ -1,4 +1,3 @@
-#![allow(clippy::needless_borrow)]
 use crate::builder::Worker;
 use anyhow::{Ok, Result};
 use axum::Router;
@@ -34,19 +33,21 @@ enum Commands {
     },
 }
 
-const PAGES_DIR: &str = "pages";
-const PUBLIC_DIR: &str = "public";
-
 #[tokio::main]
 async fn main() -> Result<()> {
     env_logger::init();
+
     let args = Cli::parse();
 
     match args.command {
         Commands::Dev { watch, input_dir } => {
             let worker = Worker::new(&input_dir);
             let output_dir = worker.get_output_dir().to_string();
+            let port = worker.get_settings().dev.port.clone();
+
+            // Trigger a build
             worker.build().unwrap();
+
             if watch {
                 tokio::task::spawn_blocking(move || {
                     let mut hotwatch =
@@ -64,8 +65,6 @@ async fn main() -> Result<()> {
                     }
                 });
             }
-
-            let port = worker.get_settings().dev.port.clone();
 
             let addr = SocketAddr::from(([0, 0, 0, 0], port));
             warn!("Dev server started on -> http://localhost:{}", port);
