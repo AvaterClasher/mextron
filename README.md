@@ -24,6 +24,7 @@ cargo install mextron
 -   [x] Markdown support
 -   [x] Customizable
 -   [x] Syntax highlighting
+-   [x] SEO
 
 ### Project Structure
 

@@ -1,5 +1,5 @@
 use self::utils::{create_dir_in_path, path_to_string};
-use anyhow::{Ok, Result};
+use anyhow::Result;
 use colored::Colorize;
 use config::Config;
 use fs_extra::{copy_items, dir::CopyOptions};

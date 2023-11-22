@@ -1,3 +1,7 @@
+use std::fs;
+use std::path::PathBuf;
+use std::{net::SocketAddr, thread, time::Duration};
+
 use crate::builder::utils::{create_dir_in_path, path_to_string};
 use crate::builder::{Worker, PAGES_DIR, PUBLIC_DIR};
 use anyhow::{Ok, Result};
@@ -5,18 +9,15 @@ use axum::Router;
 use builder::settings::Settings;
 use clap::{Parser, Subcommand};
 use colored::Colorize;
-use std::fs;
-use std::path::PathBuf;
-use std::{net::SocketAddr, thread, time::Duration};
 use tower_http::services::ServeDir;
 use tower_http::trace::TraceLayer;
 
 mod builder;
 
 #[derive(Debug, Parser)]
-#[command(name = "mextron")]
-#[command(bin_name = "mextron")]
-#[command(about = "A blazing fast static site generator in Rust", long_about = None)]
+#[command(name = "rustyink")]
+#[command(bin_name = "rustyink")]
+#[command(about = "A blazing fast static site generator", long_about = None)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -110,7 +111,6 @@ async fn main() -> Result<()> {
             }
 
             let addr = SocketAddr::from(([0, 0, 0, 0], port));
-
             println!(
                 "\n- Dev server started on -> {}:{}",
                 "http://localhost".bold(),
@@ -118,7 +118,6 @@ async fn main() -> Result<()> {
             );
 
             let _ = tokio::net::TcpListener::bind(addr).await.unwrap();
-
             let app = Router::new().nest_service("/", ServeDir::new(output_dir));
             axum::Server::bind(&addr)
                 .serve(app.layer(TraceLayer::new_for_http()).into_make_service())
