@@ -2,6 +2,11 @@
 name = "mextron"
 version = "0.1.0"
 edition = "2021"
+description = "Blazing fast static site generator"
+authors = ["Soumyadip Moni <avater.clasher@gmail.com>"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/AvaterClasher/Mextron"
+keywords = ["static", "site", "generator", "html",]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
