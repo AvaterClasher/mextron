@@ -5,6 +5,7 @@ pub struct Settings {
     pub dev: DevSettings,
     pub site: SiteSettings,
     pub navigation: NavigationSettings,
+    pub meta: SiteMeta,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -13,9 +14,14 @@ pub struct DevSettings {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SiteSettings {
+pub struct SiteMeta {
     pub title: String,
     pub description: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct SiteSettings {
+    pub code_highlighting: bool,
 }
 
 #[derive(Debug, Clone, Deserialize)]
