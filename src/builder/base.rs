@@ -113,8 +113,8 @@ pub const PAGE_FOOTER: &'static str = r#"
 
   <footer class="container">
     <small>
-      Built with <a href="https://rustyink.techulus.xyz" target="_blank" rel="noopener noreferrer">Rusty!nk</a> •
-      <a target="_blank" rel="noopener noreferrer" href="https://github.com/arjunkomath/rustyink">
+      Built with <a href="https://avaterclasher.github.io/mextron/" target="_blank" rel="noopener noreferrer">Mextron</a> •
+      <a target="_blank" rel="noopener noreferrer" href="https://github.com/AvaterClasher/mextron">
         Source code
       </a>
     </small>

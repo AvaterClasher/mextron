@@ -15,13 +15,13 @@ impl Settings {
 port = 3000
 
 [meta]
-title = "Rusty!nk"
+title = "Mextron"
 description = "Blazing fast static site generator written in Rust"
 
 [navigation]
 links = [
     { label = "~/", url = "/" },
-    { label = "GitHub", url = "https://github.com/arjunkomath/rustyink" },
+    { label = "GitHub", url = "https://github.com/AvaterClasher/mextron" },
 ]"#,
         );
 
