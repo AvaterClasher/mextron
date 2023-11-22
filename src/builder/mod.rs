@@ -1,9 +1,7 @@
 use anyhow::{Ok, Result};
 use config::Config;
 use fs_extra::{copy_items, dir::CopyOptions};
-use handlebars::Handlebars;
 use log::{info, trace};
-use regex::Regex;
 use slugify::slugify;
 use std::{
     fs,
@@ -13,6 +11,7 @@ use tokio::time::Instant;
 use walkdir::WalkDir;
 
 mod base;
+mod render;
 mod settings;
 
 pub const PAGES_DIR: &str = "pages";
@@ -35,6 +34,7 @@ pub struct Worker {
     pages_dir: String,
     public_dir: String,
     output_dir: String,
+    styles_file: String,
     settings: settings::Settings,
 }
 
@@ -57,6 +57,14 @@ impl Worker {
             .to_string();
 
         let output_dir = OUTPUT_DIR;
+
+        let css_file = input_dir
+            .join("global.css")
+            .canonicalize()
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .to_string();
 
         let config_file = input_dir
             .join("Settings.toml")
@@ -82,6 +90,7 @@ impl Worker {
             pages_dir: pages_dir.to_string(),
             public_dir: public_dir.to_string(),
             output_dir: output_dir.to_string(),
+            styles_file: css_file.to_string(),
             settings,
         }
     }
@@ -104,28 +113,6 @@ impl Worker {
         let options = CopyOptions::new();
         copy_items(&public_files, &self.output_dir, &options)?;
         Ok(())
-    }
-
-    fn get_markdown_and_metadata(&self, file: &str) -> Result<(Option<String>, String)> {
-        let markdown = fs::read_to_string(&file)?;
-
-        let metadata = Regex::new(r"(?s)---(.*?)---(.*)").unwrap();
-        if let Some(captures) = metadata.captures(&markdown) {
-            let metadata = captures.get(1).unwrap().as_str();
-            let markdown = captures.get(2).unwrap().as_str();
-
-            let parser = pulldown_cmark::Parser::new_ext(&markdown, pulldown_cmark::Options::all());
-            let mut content = String::new();
-            pulldown_cmark::html::push_html(&mut content, parser);
-
-            Ok((Some(metadata.to_string()), content))
-        } else {
-            let parser = pulldown_cmark::Parser::new_ext(&markdown, pulldown_cmark::Options::all());
-            let mut content = String::new();
-            pulldown_cmark::html::push_html(&mut content, parser);
-
-            Ok((None, content))
-        }
     }
 
     pub fn get_output_dir(&self) -> &str {
@@ -156,30 +143,7 @@ impl Worker {
         for file in &markdown_files {
             trace!("Processing file: {}", file);
 
-            let mut html = base::HEADER.to_owned();
-
-            let (metadata, body) = self.get_markdown_and_metadata(&file)?;
-
-            if let Some(metadata) = metadata {
-                let metadata: settings::PageMetadata = Config::builder()
-                    .add_source(config::File::from_str(&metadata, config::FileFormat::Yaml))
-                    .build()
-                    .unwrap()
-                    .try_deserialize()
-                    .unwrap();
-
-                html.push_str(&base::render_article(&body, Some(metadata)).as_str());
-            } else {
-                html.push_str(&base::render_article(&body, None).as_str());
-            }
-
-            html.push_str(base::FOOTER);
-
-            let reg = Handlebars::new();
-            let html = reg.render_template(&html, &self.settings.site)?;
-
-            let top_navigation = base::render_links(&self.settings.site.top_navigation);
-            let html = html.replace("%%LINKS%%", &top_navigation);
+            let html = render::Render::new(&file, &self.styles_file, self.settings.clone()).render()?;
 
             let html_file = file
                 .replace(&self.pages_dir, &self.output_dir)
