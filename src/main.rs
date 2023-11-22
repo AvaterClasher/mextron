@@ -2,7 +2,7 @@ use crate::builder::Worker;
 use anyhow::{Ok, Result};
 use axum::Router;
 use clap::{Parser, Subcommand};
-use log::{info, warn};
+use colored::Colorize;
 use std::path::PathBuf;
 use std::{net::SocketAddr, thread, time::Duration};
 use tower_http::services::ServeDir;
@@ -11,8 +11,8 @@ use tower_http::trace::TraceLayer;
 mod builder;
 
 #[derive(Debug, Parser)]
-#[command(name = "rink")]
-#[command(bin_name = "rink")]
+#[command(name = "mextron")]
+#[command(bin_name = "mextron")]
 #[command(about = "A blazing fast static site generator in Rust", long_about = None)]
 struct Cli {
     #[command(subcommand)]
@@ -41,8 +41,6 @@ enum Commands {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    env_logger::init();
-
     let args = Cli::parse();
 
     match args.command {
@@ -59,7 +57,10 @@ async fn main() -> Result<()> {
                     let mut hotwatch =
                         hotwatch::Hotwatch::new().expect("hotwatch failed to initialize!");
 
-                    info!("Watching for changes in -> {}", input_dir.to_str().unwrap());
+                    println!(
+                        "- Watching for changes in -> {}",
+                        input_dir.to_str().unwrap().blue().bold()
+                    );
                     hotwatch
                         .watch(input_dir, move |_| {
                             worker.build().unwrap();
@@ -73,9 +74,15 @@ async fn main() -> Result<()> {
             }
 
             let addr = SocketAddr::from(([0, 0, 0, 0], port));
-            warn!("Dev server started on -> http://localhost:{}", port);
+
+            println!(
+                "\n- Dev server started on -> {}:{}",
+                "http://localhost".bold(),
+                port
+            );
 
             let _ = tokio::net::TcpListener::bind(addr).await.unwrap();
+
             let app = Router::new().nest_service("/", ServeDir::new(output_dir));
             axum::Server::bind(&addr)
                 .serve(app.layer(TraceLayer::new_for_http()).into_make_service())
@@ -87,6 +94,6 @@ async fn main() -> Result<()> {
             worker.build().unwrap();
         }
     }
- 
+
     Ok(())
 }
