@@ -11,7 +11,8 @@ title = "Mextron"
 description = "Blazing fast static site generator written in Rust"
 
 
-top_navigation = [
+[navigation] 
+links = [
     { label = "~/", url = "/" },
     { label = "GitHub", url = "https://github.com/AvaterClasher/mextron" },
     { label = "Website", url = "https://soumyadipmoni.netlify.app" },
