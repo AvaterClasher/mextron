@@ -1,4 +1,6 @@
+use self::utils::{create_dir_in_path, path_to_string};
 use anyhow::{Ok, Result};
+use colored::Colorize;
 use config::Config;
 use fs_extra::{copy_items, dir::CopyOptions};
 use slugify::slugify;
@@ -8,27 +10,16 @@ use std::{
 };
 use tokio::time::Instant;
 use walkdir::WalkDir;
-use colored::Colorize;
 
 mod base;
 mod render;
-mod settings;
+mod seo;
+pub mod settings;
+pub mod utils;
 
 pub const PAGES_DIR: &str = "pages";
 pub const PUBLIC_DIR: &str = "public";
 pub const OUTPUT_DIR: &str = "_site";
-
-fn create_dir(dir: &str) -> Result<()> {
-    if let Err(err) = fs::metadata(&dir) {
-        if err.kind() == std::io::ErrorKind::NotFound {
-            if let Err(err) = fs::create_dir_all(&dir) {
-                eprintln!("Failed to create {} directory: {}", dir, err);
-            }
-        }
-    }
-
-    Ok(())
-}
 
 pub struct Worker {
     pages_dir: String,
@@ -40,25 +31,11 @@ pub struct Worker {
 
 impl Worker {
     pub fn new(input_dir: &PathBuf) -> Self {
-        let pages_dir = input_dir
-            .join(PAGES_DIR)
-            .canonicalize()
-            .unwrap()
-            .to_str()
-            .unwrap()
-            .to_string();
-
-        let public_dir = input_dir
-            .join(PUBLIC_DIR)
-            .canonicalize()
-            .unwrap()
-            .to_str()
-            .unwrap()
-            .to_string();
-
+        let pages_dir = path_to_string(&input_dir.join(PAGES_DIR));
+        let public_dir = path_to_string(&input_dir.join(PUBLIC_DIR));
         let output_dir = OUTPUT_DIR;
 
-        let css_file = input_dir
+        let syles_file = input_dir
             .join("global.css")
             .canonicalize()
             .unwrap()
@@ -74,21 +51,19 @@ impl Worker {
             .unwrap()
             .to_string();
 
-        create_dir(&pages_dir).unwrap();
-        create_dir(&public_dir).unwrap();
-
         Self {
             pages_dir: pages_dir.to_string(),
             public_dir: public_dir.to_string(),
             output_dir: output_dir.to_string(),
-            styles_file: css_file.to_string(),
             config_file: config_file.to_string(),
+            styles_file: syles_file.to_string(),
         }
     }
 
-    pub fn setup_output(&self) -> Result<()> {
+    fn setup_output(&self) -> Result<()> {
         let _ = fs::remove_dir_all(&self.output_dir);
-        create_dir(&self.output_dir).unwrap();
+        create_dir_in_path(&PathBuf::from(&self.output_dir))?;
+
         Ok(())
     }
 
@@ -99,9 +74,9 @@ impl Worker {
             .map(|e| e.path().display().to_string())
             .skip(1)
             .collect();
-
         let options = CopyOptions::new();
         copy_items(&public_files, &self.output_dir, &options)?;
+
         Ok(())
     }
 
@@ -123,14 +98,12 @@ impl Worker {
     }
 
     pub fn build(&self) -> Result<()> {
-        println!("{}...","\n- Building site".bold());
+        println!("{}...", "\n- Building site".bold());
 
         let start_time = Instant::now();
 
         self.setup_output()?;
         self.copy_public_files()?;
-
-        // Handle pages
 
         let markdown_files: Vec<String> = WalkDir::new(&self.pages_dir)
             .into_iter()
@@ -166,12 +139,22 @@ impl Worker {
             };
 
             let folder = Path::new(&html_file).parent().unwrap();
-
             let _ = fs::create_dir_all(folder);
             fs::write(&html_file, html)?;
         }
-        let elasped_time = start_time.elapsed();
-        println!("- Completed in: {:?}", elasped_time);
+
+        // Handle robots.txt, ignore if there is a file already
+        if !Path::new(&self.output_dir).join("robots.txt").exists() {
+            match seo::generate_robots_txt(&self.get_settings()) {
+                Ok(robots_txt) => {
+                    fs::write(Path::new(&self.output_dir).join("robots.txt"), robots_txt)?;
+                }
+                _ => {}
+            }
+        }
+
+        let elapsed_time = start_time.elapsed();
+        println!("- Completed in: {:?}", elapsed_time);
 
         Ok(())
     }

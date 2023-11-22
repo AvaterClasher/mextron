@@ -1,8 +1,11 @@
-use crate::builder::Worker;
+use crate::builder::utils::{create_dir_in_path, path_to_string};
+use crate::builder::{Worker, PAGES_DIR, PUBLIC_DIR};
 use anyhow::{Ok, Result};
 use axum::Router;
+use builder::settings::Settings;
 use clap::{Parser, Subcommand};
 use colored::Colorize;
+use std::fs;
 use std::path::PathBuf;
 use std::{net::SocketAddr, thread, time::Duration};
 use tower_http::services::ServeDir;
@@ -21,6 +24,12 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Commands {
+    /// Create new project
+    #[command()]
+    New {
+        #[clap(required = true, help = "Project directory")]
+        project_dir: PathBuf,
+    },
     /// Start dev mode
     #[command()]
     Dev {
@@ -44,6 +53,32 @@ async fn main() -> Result<()> {
     let args = Cli::parse();
 
     match args.command {
+        Commands::New { project_dir } => {
+            println!("{}...", "\n- Creating new project".bold());
+
+            create_dir_in_path(&project_dir)?;
+            create_dir_in_path(&project_dir.join(PAGES_DIR))?;
+            create_dir_in_path(&project_dir.join(PUBLIC_DIR))?;
+
+            let project_dir_path = path_to_string(&project_dir);
+
+            let settings = Settings::new();
+            let settings_file = format!("{}/Settings.toml", &project_dir_path);
+            fs::write(&settings_file, &settings).unwrap();
+
+            let global_css_file = format!("{}/global.css", &project_dir_path);
+            let global_css_content = String::from(
+                r#"@import url('https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css');"#,
+            );
+            fs::write(&global_css_file, global_css_content).unwrap();
+
+            let pages_dir_path = path_to_string(&project_dir.join(PAGES_DIR));
+            let index_file = format!("{}/page.md", &pages_dir_path);
+            let index_content = r#"Hello!"#;
+            fs::write(&index_file, index_content).unwrap();
+
+            println!("{}", "- Done!".bold());
+        }
         Commands::Dev { watch, input_dir } => {
             let worker = Worker::new(&input_dir);
             let output_dir = worker.get_output_dir().to_string();
@@ -63,6 +98,7 @@ async fn main() -> Result<()> {
                     );
                     hotwatch
                         .watch(input_dir, move |_| {
+                            println!("\n- {}", "File(s) changed".bold().yellow());
                             worker.build().unwrap();
                         })
                         .expect("failed to watch content folder!");

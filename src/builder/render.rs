@@ -1,10 +1,12 @@
+use super::{
+    base,
+    settings::{self, Settings},
+};
 use anyhow::Result;
 use config::Config;
 use handlebars::Handlebars;
 use regex::Regex;
 use std::fs;
-
-use super::{base, settings};
 
 pub struct Render {
     pub file: String,
@@ -53,15 +55,9 @@ impl Render {
 
         let html = html.replace("%%STYLES%%", &global_styles);
 
-        let html = if self.settings.site.code_highlighting {
-            html.replace("%%CODE_HIGHIGHTING_STYLES%%", base::CODE_HIGHIGHTING_STYLES)
-                .replace(
-                    "%%CODE_HIGHIGHTING_SCRIPTS%%",
-                    base::CODE_HIGHIGHTING_SCRIPTS,
-                )
-        } else {
-            html.replace("%%CODE_HIGHIGHTING_STYLES%%", "")
-                .replace("%%CODE_HIGHIGHTING_SCRIPTS%%", "")
+        let html = match self.handle_code_highlighting(&html, &self.settings) {
+            Ok(html) => html,
+            _ => html,
         };
 
         Ok(html)
@@ -93,5 +89,25 @@ impl Render {
 
             Ok((None, content))
         }
+    }
+
+    fn handle_code_highlighting(&self, html: &str, settings: &Settings) -> Result<String> {
+        let enabled = match settings.site.as_ref() {
+            Some(site) => site.code_highlighting.unwrap_or(false),
+            None => false,
+        };
+
+        let result = if enabled {
+            html.replace("%%CODE_HIGHIGHTING_STYLES%%", base::CODE_HIGHIGHTING_STYLES)
+                .replace(
+                    "%%CODE_HIGHIGHTING_SCRIPTS%%",
+                    base::CODE_HIGHIGHTING_SCRIPTS,
+                )
+        } else {
+            html.replace("%%CODE_HIGHIGHTING_STYLES%%", "")
+                .replace("%%CODE_HIGHIGHTING_SCRIPTS%%", "")
+        };
+
+        Ok(result)
     }
 }

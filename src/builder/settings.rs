@@ -3,9 +3,28 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Deserialize)]
 pub struct Settings {
     pub dev: DevSettings,
-    pub site: SiteSettings,
+    pub site: Option<SiteSettings>,
     pub navigation: NavigationSettings,
     pub meta: SiteMeta,
+}
+
+impl Settings {
+    pub fn new() -> String {
+        let default_settings = String::from(
+            r#"[dev]
+            port = 3000
+            [meta]
+            title = "Mextron"
+            description = "Blazing fast static site generator written in Rust"
+            [navigation]
+            links = [
+            { label = "~/", url = "/" },
+            { label = "GitHub", url = "https://github.com/AvaterClasher/mextron" },
+            ]"#,
+        );
+
+        default_settings
+    }
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -21,7 +40,8 @@ pub struct SiteMeta {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct SiteSettings {
-    pub code_highlighting: bool,
+    pub block_search_indexing: Option<bool>,
+    pub code_highlighting: Option<bool>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
