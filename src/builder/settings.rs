@@ -41,6 +41,7 @@ pub struct SiteMeta {
 #[derive(Debug, Clone, Deserialize)]
 pub struct SiteSettings {
     pub block_search_indexing: Option<bool>,
+    pub sitemap_base_url: Option<String>,
     pub code_highlighting: Option<bool>,
 }
 
