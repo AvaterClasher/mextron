@@ -1,6 +1,6 @@
 [package]
 name = "mextron"
-version = "0.1.0"
+version = "0.2.1"
 edition = "2021"
 description = "Blazing fast static site generator"
 authors = ["Soumyadip Moni <avater.clasher@gmail.com>"]
