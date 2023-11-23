@@ -11,7 +11,6 @@ use std::{
 use tokio::time::Instant;
 use walkdir::WalkDir;
 
-mod base;
 mod render;
 mod seo;
 pub mod settings;
@@ -19,29 +18,23 @@ pub mod utils;
 
 pub const PAGES_DIR: &str = "pages";
 pub const PUBLIC_DIR: &str = "public";
+pub const THEME_DIR: &str = "theme";
 pub const OUTPUT_DIR: &str = "_site";
 
 pub struct Worker {
     pages_dir: String,
     public_dir: String,
     output_dir: String,
-    styles_file: String,
     config_file: String,
+    theme_dir: String,
 }
 
 impl Worker {
     pub fn new(input_dir: &PathBuf) -> Self {
         let pages_dir = path_to_string(&input_dir.join(PAGES_DIR));
         let public_dir = path_to_string(&input_dir.join(PUBLIC_DIR));
+        let theme_dir = path_to_string(&input_dir.join(THEME_DIR));
         let output_dir = OUTPUT_DIR;
-
-        let syles_file = input_dir
-            .join("global.css")
-            .canonicalize()
-            .unwrap()
-            .to_str()
-            .unwrap()
-            .to_string();
 
         let config_file = input_dir
             .join("Settings.toml")
@@ -56,7 +49,7 @@ impl Worker {
             public_dir: public_dir.to_string(),
             output_dir: output_dir.to_string(),
             config_file: config_file.to_string(),
-            styles_file: syles_file.to_string(),
+            theme_dir: theme_dir.to_string(),
         }
     }
 
@@ -116,7 +109,7 @@ impl Worker {
 
         for file in &markdown_files {
             let html =
-                render::Render::new(&file, &self.styles_file, self.get_settings()).render()?;
+                render::Render::new(&file, &self.theme_dir, self.get_settings()).render()?;
 
             let html_file = file
                 .replace(&self.pages_dir, &self.output_dir)

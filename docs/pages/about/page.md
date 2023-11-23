@@ -1,4 +1,5 @@
 ---
+template: post
 title: About
 author: Soumyadip Moni
 author_url: https://github.com/AvaterClasher
