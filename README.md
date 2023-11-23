@@ -20,10 +20,24 @@ You can install Mextron using Cargo:
 cargo install mextron
 ```
 
+### Create new project
+
+You can initialise a new project using `new` command.
+
+```bash
+mextron new <folder>
+```
+
+You can optionally specify a theme also.
+
+```bash
+mextron new <folder> -t pico
+```
+
 ### Features
 
 -   [x] Markdown support
--   [x] Customizable
+-   [x] Custom Themes
 -   [x] Syntax highlighting
 -   [x] SEO
 
@@ -32,15 +46,19 @@ cargo install mextron
 The following folder structure is expected by Mextron:
 
 ```
-docs/
-├─ public/
-│  ├─ favicon.ico
-├─ pages/
-│  ├─ page.md
-│  ├─ about/
-│  │  ├─ page.md
-├─ Settings.toml
-├─ global.css
+.
+├── pages
+│  ├── page.md
+│  └── path
+│     ├── custom-url.md
+│     └── page.md
+├── public
+│  └── favicon.ico
+├── Settings.toml
+└── theme
+   ├── app.hbs
+   ├── global.css
+   └── post.hbs
 ```
 
 The `docs` folder is the input directory of the project and is always specified while running dev server or building. You can specify a different input directory like this:
@@ -49,7 +67,8 @@ The `docs` folder is the input directory of the project and is always specified 
 mextron dev <input-dir-path>
 ```
 
+-   The `Settings.toml` file contains the settings of the website, you can customize the website by changing the values in this file.
 -   The `public` folder contains all the static assets of the website, these files are copied as-is to the output directory.
 -   The `pages` folder contains all the Markdown files, this is where you write your content.
--   The `Settings.toml` file contains the settings of the website, you can customize the website by changing the values in this file.
+-   The `theme` folder contains all site templates and styles. It is written using [handlebars](https://handlebarsjs.com/guide/) syntax.
 -   The `global.css` file contains the global CSS of the website, you can write your own CSS in this file.
