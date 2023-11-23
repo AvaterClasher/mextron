@@ -20,7 +20,6 @@ struct RenderData {
     styles: String,
     links: Vec<Link>,
     code_highlighting: bool,
-
     content: String,
 }
 
@@ -81,7 +80,10 @@ impl Render {
                 content,
                 styles,
                 links: self.settings.navigation.links.clone(),
-                code_highlighting: true,
+                code_highlighting: self
+                    .settings
+                    .get_site_settings()
+                    .is_code_highlighting_enabled(),
             },
         )?;
 
