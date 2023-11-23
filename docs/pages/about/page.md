@@ -3,7 +3,7 @@ template: post
 title: About
 author: Soumyadip Moni
 author_link: https://github.com/AvaterClasher
-published: 23 November, 2023
+date_published: 23 November, 2023
 footnote: FYI, you can use Markdown syntax in this page.
 ---
 
