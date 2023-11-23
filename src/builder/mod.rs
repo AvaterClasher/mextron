@@ -38,13 +38,7 @@ impl Worker {
         let theme_dir = path_to_string(&input_dir.join(THEME_DIR));
         let output_dir = OUTPUT_DIR;
 
-        let config_file = input_dir
-            .join("Settings.toml")
-            .canonicalize()
-            .unwrap()
-            .to_str()
-            .unwrap()
-            .to_string();
+        let config_file = path_to_string(&input_dir.join("Settings.toml"));
 
         Self {
             pages_dir: pages_dir.to_string(),
@@ -80,16 +74,22 @@ impl Worker {
     }
 
     pub fn get_settings(&self) -> settings::Settings {
-        let settings: settings::Settings = Config::builder()
+        match Config::builder()
             .add_source(config::File::with_name(&self.config_file))
             .build()
-            .unwrap()
-            .try_deserialize()
-            .unwrap();
-
-        // println!("{:#?}", settings);
-
-        settings
+        {
+            Ok(config) => match config.try_deserialize() {
+                Ok(settings) => settings,
+                Err(e) => {
+                    println!("{}: {}", "Failed to parse settings file, ".red(), e);
+                    std::process::exit(1);
+                }
+            },
+            Err(e) => {
+                println!("{}: {}", "Failed to open settings file, ".red(), e);
+                std::process::exit(1);
+            }
+        }
     }
 
     pub fn build(&self) -> Result<()> {
@@ -135,7 +135,14 @@ impl Worker {
                 html_file
             };
 
-            let folder = Path::new(&html_file).parent().unwrap();
+            let folder = Path::new(&html_file).parent().unwrap_or_else(|| {
+                println!(
+                    "{}: {}",
+                    "Failed to create folder for generated file, ".red(),
+                    &html_file
+                );
+                std::process::exit(1);
+            });
             let _ = fs::create_dir_all(folder);
             let minified = minify(&html.as_bytes(), &Cfg::new());
             fs::write(&html_file, minified)?;

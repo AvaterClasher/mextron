@@ -6,6 +6,7 @@ use std::{
 };
 
 use super::utils::create_dir_in_path;
+use crate::builder::utils::path_to_string;
 use anyhow::Result;
 use async_recursion::async_recursion;
 use owo_colors::OwoColorize;
@@ -34,7 +35,7 @@ impl GitHubContent {
 
 #[async_recursion]
 async fn download_folder(
-    project_dir: &PathBuf,
+    project_dir: &str,
     theme: &str,
     client: &Client,
     owner: &str,
@@ -48,7 +49,7 @@ async fn download_folder(
 
     // Create a custom user agent header to avoid rate limiting
     let mut headers = HeaderMap::new();
-    headers.insert(USER_AGENT, "RustyInk".parse().unwrap());
+    headers.insert(USER_AGENT, "Mextron".parse()?);
 
     // Send the API request to get the folder contents
     let response = client
@@ -61,12 +62,14 @@ async fn download_folder(
 
     for item in response {
         if item.is_file() {
-            let file_path = item.path.replace(&theme, project_dir.to_str().unwrap());
+            let file_path = item.path.replace(&theme, project_dir);
 
-            let folder = Path::new(&file_path).parent().unwrap();
+            let folder = Path::new(&file_path).parent().unwrap_or_else(|| {
+                panic!("Failed to access folder of file {}", file_path.bold().red())
+            });
             let _ = fs::create_dir_all(folder);
 
-            println!("\t Creating file: {}", file_path.bold().green());
+            println!("\t Downloading file: {}", item.path.bold().green());
 
             let download_url = format!(
                 "https://raw.githubusercontent.com/{}/{}/master/{}",
@@ -91,6 +94,7 @@ async fn download_folder(
 
 pub async fn download_theme(project_dir: &PathBuf, theme: &str) -> Result<()> {
     create_dir_in_path(&project_dir)?;
+    let project_dir = path_to_string(project_dir);
 
     let client = Client::new();
     let repo_owner = "AvaterClasher";
@@ -98,7 +102,7 @@ pub async fn download_theme(project_dir: &PathBuf, theme: &str) -> Result<()> {
 
     println!("- Downloading theme {}", theme.bold().blue());
 
-    download_folder(project_dir, theme, &client, repo_owner, repo_name, theme).await?;
+    download_folder(&project_dir, theme, &client, repo_owner, repo_name, theme).await?;
 
     Ok(())
 }
