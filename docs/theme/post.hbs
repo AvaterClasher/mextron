@@ -1,24 +1,24 @@
 <article>
-	{{#if title}}
-		<header>
+	<header>
+		{{#if title}}
 			<h2>{{title}}</h2>
+		{{/if}}
 
-			{{#if author}}
-				<p>
-					{{#if author_link}}
-						<small>// Written by
-							<a href="{{author_link}}">{{author}}</a></small>
-					{{else}}
-						<small>// Written by {{author}}</small>
-					{{/if}}
-				</p>
-			{{/if}}
+		{{#if author}}
+			<p>
+				{{#if author_link}}
+					<small>// Written by
+						<a href="{{author_link}}">{{author}}</a></small>
+				{{else}}
+					<small>// Written by {{author}}</small>
+				{{/if}}
+			</p>
+		{{/if}}
 
-			{{#if published}}
-				<p><small>// {{published}}</small></p>
-			{{/if}}
-		</header>
-	{{/if}}
+		{{#if published}}
+			<p><small>// {{published}}</small></p>
+		{{/if}}
+	</header>
 
 	{{{body}}}
 
