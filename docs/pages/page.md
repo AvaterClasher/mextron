@@ -5,7 +5,7 @@
 
 > 🚧 This project is currently under development. Expect breaking changes. 🚧
 
-A sleek and minimalist static site generator written in Rust. Designed with simplicity in mind, Mextron makes website creation a breeze.
+A sleek and minimalist static site generator written in Rust. Designed with simplicity in mind, Mextron makes website creation a breeze.It supports Markdown files, allowing you to write content with ease.
 
 
 ### Installation
