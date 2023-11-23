@@ -58,12 +58,3 @@ pub struct Link {
     pub url: String,
 }
 
-#[derive(Debug, Clone, Deserialize)]
-pub struct PageMetadata {
-    pub template: Option<String>,
-    pub title: String,
-    pub footnote: Option<String>,
-    pub author: Option<String>,
-    pub author_url: Option<String>,
-    pub published: Option<String>,
-}

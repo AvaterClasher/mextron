@@ -109,7 +109,7 @@ impl Worker {
 
         for file in &markdown_files {
             let html =
-                render::Render::new(&file, &self.theme_dir, self.get_settings()).render()?;
+                render::Render::new(&file, &self.theme_dir, self.get_settings()).render_page()?;
 
             let html_file = file
                 .replace(&self.pages_dir, &self.output_dir)
