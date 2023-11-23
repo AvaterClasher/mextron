@@ -75,8 +75,8 @@ async fn main() -> Result<()> {
             }
         }
         Commands::Dev { watch, input_dir } => {
-            if path_to_string(&input_dir)
-                == path_to_string(&env::current_dir().unwrap_or(PathBuf::from(".")))
+            if path_to_string(&input_dir)?
+                == path_to_string(&env::current_dir().unwrap_or(PathBuf::from(".")))?
             {
                 println!(
                     "{}",
@@ -87,7 +87,7 @@ async fn main() -> Result<()> {
 
                 return Ok(());
             }
-            let worker = Worker::new(&input_dir);
+            let worker = Worker::new(&input_dir)?;
             let output_dir = worker.get_output_dir().to_string();
             let port = worker.get_settings().dev.port.clone();
 
@@ -138,7 +138,7 @@ async fn main() -> Result<()> {
             }
         }
         Commands::Build { input_dir } => {
-            let worker = Worker::new(&input_dir);
+            let worker = Worker::new(&input_dir)?;
             match worker.build() {
                 Err(e) => {
                     println!("- Build failed -> {}", e.to_string().red().bold());
