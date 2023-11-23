@@ -161,7 +161,7 @@ impl Worker {
         }
 
         let elapsed_time = start_time.elapsed();
-        println!("- Completed in: {:?}", elapsed_time);
+        println!("✔ Completed in: {:?}", elapsed_time);
 
         Ok(())
     }
