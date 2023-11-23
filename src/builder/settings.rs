@@ -37,3 +37,31 @@ pub struct Link {
     pub url: String,
 }
 
+impl Settings {
+    pub fn get_site_settings(&self) -> SiteSettings {
+        match &self.site {
+            Some(site) => site.clone(),
+            None => SiteSettings {
+                block_search_indexing: Some(false),
+                sitemap_base_url: None,
+                code_highlighting: Some(false),
+            },
+        }
+    }
+}
+
+impl SiteSettings {
+    pub fn get_sitemap_base_url(&self) -> Option<String> {
+        match &self.sitemap_base_url {
+            Some(url) => Some(url.clone()),
+            None => None,
+        }
+    }
+
+    pub fn is_search_engine_blocked(&self) -> bool {
+        match self.block_search_indexing {
+            Some(true) => true,
+            _ => false,
+        }
+    }
+}
