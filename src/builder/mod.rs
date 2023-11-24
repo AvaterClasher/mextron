@@ -13,6 +13,7 @@ use tokio::time::Instant;
 use walkdir::WalkDir;
 
 pub mod bootstrap;
+pub mod cache;
 mod render;
 mod seo;
 pub mod settings;
@@ -29,10 +30,11 @@ pub struct Worker {
     theme_dir: String,
     output_dir: String,
     config_file: String,
+    cache: cache::Cache,
 }
 
 impl Worker {
-    pub fn new(input_dir: &PathBuf) -> Result<Self> {
+    pub fn new(input_dir: &PathBuf, cache: cache::Cache) -> Result<Self> {
         let output_dir = OUTPUT_DIR;
         let pages_dir = path_to_string(&input_dir.join(PAGES_DIR))?;
         let public_dir = path_to_string(&input_dir.join(PUBLIC_DIR))?;
@@ -45,11 +47,12 @@ impl Worker {
             public_dir: public_dir.to_string(),
             theme_dir: theme_dir.to_string(),
             config_file: config_file.to_string(),
+            cache,
         })
     }
 
     fn setup_output(&self) -> Result<()> {
-        let _ = fs::remove_dir_all(&self.output_dir);
+        fs::remove_dir_all(&self.output_dir)?;
         create_dir_in_path(&PathBuf::from(&self.output_dir))?;
 
         Ok(())
@@ -109,9 +112,14 @@ impl Worker {
         let all_pages_with_metadata: Vec<(String, String)> = markdown_files
             .par_iter()
             .map(|x| {
-                let metadata = render::Render::new(&x, &self.theme_dir, self.get_settings())
-                    .get_metadata()
-                    .unwrap_or(None);
+                let metadata = render::Render::new(
+                    x,
+                    &self.theme_dir,
+                    self.get_settings(),
+                    self.cache.clone(),
+                )
+                .get_metadata()
+                .unwrap_or(None);
 
                 let x = x.replace(&self.pages_dir, "").replace("page.md", "");
 
@@ -119,7 +127,7 @@ impl Worker {
                     let x = x
                         .replace(".md", "")
                         .split("/")
-                        .map(|x| format!("{}", slugify!(x)))
+                        .map(|x| slugify!(x))
                         .collect::<Vec<String>>()
                         .join("/");
                     x
@@ -129,7 +137,7 @@ impl Worker {
 
                 (x, metadata.unwrap_or("".to_string()))
             })
-            .filter(|x| x.0 != "/" || x.1 != "")
+            .filter(|x| x.0 != "/" || x.1.is_empty())
             .collect();
 
         let site_directory = self.generate_site_directory(&all_pages_with_metadata)?;
@@ -165,8 +173,13 @@ impl Worker {
     }
 
     fn process_file(&self, file: &str, site_directory: &serde_yaml::Value) -> Result<()> {
-        let html = render::Render::new(&file, &self.theme_dir, self.get_settings())
-            .render_page(&site_directory)?;
+        let html = render::Render::new(
+            file,
+            &self.theme_dir,
+            self.get_settings(),
+            self.cache.clone(),
+        )
+        .render_page(site_directory)?;
 
         let html_file = file
             .replace(&self.pages_dir, &self.output_dir)
@@ -180,7 +193,7 @@ impl Worker {
                     if x.contains("index") || x == OUTPUT_DIR {
                         x.to_string()
                     } else {
-                        format!("{}", slugify!(x))
+                        slugify!(x)
                     }
                 })
                 .collect::<Vec<String>>()
@@ -193,11 +206,11 @@ impl Worker {
         let folder = Path::new(&html_file)
             .parent()
             .context("Failed to get parent folder")?;
-        let _ = fs::create_dir_all(folder);
+        fs::create_dir_all(folder)?;
 
         println!("{} {}", "✔ Generated".green(), &html_file);
 
-        let _ = fs::write(&html_file, &html)?;
+        fs::write(&html_file, html)?;
 
         Ok(())
     }

@@ -1,12 +1,16 @@
 use std::fs;
 
+use crate::builder::utils::download_url_as_string;
+
 use super::{
+    cache,
     seo::generate_open_graph_tags,
     settings::{self, Link},
     utils::{insert_kv_into_yaml, parse_string_to_yaml},
 };
 use anyhow::{Context, Result};
 use handlebars::Handlebars;
+use rayon::prelude::*;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 
@@ -14,6 +18,7 @@ pub struct Render {
     pub file: String,
     pub theme_dir: String,
     pub settings: settings::Settings,
+    cache: cache::Cache,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -22,18 +27,24 @@ struct RenderData {
     description: String,
     open_graph_tags: String,
     styles: String,
+    scripts: String,
     links: Vec<Link>,
-    code_highlighting: bool,
     page_metadata: Option<serde_yaml::Value>,
     content: String,
 }
 
 impl Render {
-    pub fn new(file: &str, theme_dir: &str, settings: settings::Settings) -> Self {
+    pub fn new(
+        file: &str,
+        theme_dir: &str,
+        settings: settings::Settings,
+        cache: cache::Cache,
+    ) -> Self {
         Self {
             file: file.to_string(),
             theme_dir: theme_dir.to_string(),
             settings: settings.clone(),
+            cache,
         }
     }
 
@@ -56,8 +67,6 @@ impl Render {
             markdown
         };
 
-        let styles = self.get_global_styles()?;
-
         let html = Handlebars::new().render_template(
             &self.get_template("app")?,
             &RenderData {
@@ -65,12 +74,9 @@ impl Render {
                 description: self.settings.meta.description.clone(),
                 open_graph_tags: generate_open_graph_tags(&self.settings)?,
                 content,
-                styles,
+                styles: self.get_global_styles()?,
+                scripts: self.get_global_scripts()?,
                 links: self.settings.navigation.links.clone(),
-                code_highlighting: self
-                    .settings
-                    .get_site_settings()
-                    .is_code_highlighting_enabled(),
                 page_metadata: metadata,
             },
         )?;
@@ -105,7 +111,45 @@ impl Render {
     fn get_global_styles(&self) -> Result<String> {
         let styles = fs::read_to_string(format!("{}/global.css", self.theme_dir))?;
 
-        Ok(styles)
+        let downloaded_styles = self
+            .settings
+            .get_site_settings()
+            .get_style_urls()
+            .par_iter()
+            .map(
+                |url| match download_url_as_string(url, self.cache.clone()) {
+                    Ok(style) => style,
+                    Err(e) => {
+                        println!("Failed to download style: {}", e);
+                        String::new()
+                    }
+                },
+            )
+            .collect::<Vec<String>>()
+            .join("\n");
+
+        Ok(downloaded_styles + "\n" + styles.as_str())
+    }
+
+    fn get_global_scripts(&self) -> Result<String> {
+        let downloaded_scripts = self
+            .settings
+            .get_site_settings()
+            .get_script_urls()
+            .par_iter()
+            .map(
+                |url| match download_url_as_string(url, self.cache.clone()) {
+                    Ok(script) => script,
+                    Err(e) => {
+                        println!("Failed to download script: {}", e);
+                        String::new()
+                    }
+                },
+            )
+            .collect::<Vec<String>>()
+            .join("\n");
+
+        Ok(downloaded_scripts)
     }
 
     fn get_markdown_and_metadata(&self) -> Result<(Option<String>, String)> {
