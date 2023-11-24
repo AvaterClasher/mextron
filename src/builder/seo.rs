@@ -63,6 +63,12 @@ pub fn generate_open_graph_tags(settings: &Settings) -> Result<String> {
 
     let mut tags = vec![];
 
+    tags.push(format!("<meta property=\"title\" content=\"{}\" />", title));
+    tags.push(format!(
+        "<meta name=\"description\" content=\"{}\" />",
+        description
+    ));
+
     tags.push(format!(
         "<meta property=\"og:title\" content=\"{}\" />",
         title
@@ -71,6 +77,40 @@ pub fn generate_open_graph_tags(settings: &Settings) -> Result<String> {
         "<meta property=\"og:description\" content=\"{}\" />",
         description
     ));
+
+    // Open Graph / Facebook
+    tags.push(String::from(
+        "<meta property=\"og:type\" content=\"website\" />",
+    ));
+    tags.push(format!(
+        "<meta property=\"og:title\" content=\"{}\" />",
+        title
+    ));
+    tags.push(format!(
+        "<meta property=\"og:description\" content=\"{}\" />",
+        description
+    ));
+
+    // Twitter
+    tags.push(format!(
+        "<meta name=\"twitter:title\" content=\"{}\" />",
+        title
+    ));
+    tags.push(format!(
+        "<meta name=\"twitter:description\" content=\"{}\" />",
+        description
+    ));
+
+    if let Some(sitemap_base_url) = settings.get_site_settings().get_sitemap_base_url() {
+        tags.push(format!(
+            "<meta property=\"og:url\" content=\"{}\" />",
+            sitemap_base_url
+        ));
+        tags.push(format!(
+            "<meta name=\"twitter:url\" content=\"{}\" />",
+            sitemap_base_url
+        ));
+    }
 
     Ok(tags.join("\n"))
 }
