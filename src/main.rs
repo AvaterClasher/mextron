@@ -1,28 +1,20 @@
-use crate::builder::bootstrap;
-use crate::builder::utils::path_to_string;
-use crate::builder::Worker;
-use anyhow::{Context, Result};
-use builder::{cache, utils};
-use clap::{Parser, Subcommand};
-use directories::ProjectDirs;
-use futures_util::stream::SplitSink;
-use futures_util::{SinkExt, StreamExt};
-use notify::RecursiveMode;
-use notify_debouncer_mini::new_debouncer;
-use owo_colors::OwoColorize;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
-use std::time::Duration;
 use std::{env, println};
-use tokio::net::{TcpListener, TcpStream};
+
+use crate::builder::bootstrap;
+use crate::builder::dev_server::Clients;
+use crate::builder::Worker;
+use anyhow::{Context, Result};
+use builder::{cache, dev_server, utils};
+use clap::{Parser, Subcommand};
+use directories::ProjectDirs;
+use owo_colors::OwoColorize;
+use tokio::net::TcpListener;
 use tokio::sync::Mutex;
-use tokio_tungstenite::tungstenite::Message;
-use tokio_tungstenite::{accept_async, tungstenite, WebSocketStream};
 
 mod builder;
-
-type Clients = Arc<Mutex<HashMap<String, SplitSink<WebSocketStream<TcpStream>, Message>>>>;
 
 #[derive(Debug, Parser)]
 #[command(name = "mextron")]
@@ -75,12 +67,10 @@ enum Commands {
 async fn main() -> Result<()> {
     let args = Cli::parse();
 
-    let project_dirs = ProjectDirs::from("io", "github", "mextron")
-        .context("Failed to get project directories")?;
+    let project_dirs =
+        ProjectDirs::from("io", "github", "mextron").context("Failed to get project directories")?;
     let cache_dir = project_dirs.cache_dir().to_string_lossy().to_string();
     let cache = cache::Cache::new(cache_dir)?;
-
-    // Start with a clean cache
 
     match args.command {
         Commands::New { project_dir, theme } => {
@@ -91,6 +81,9 @@ async fn main() -> Result<()> {
                     println!("- {}", e.to_string().red().bold());
                 }
                 _ => {
+                    // Create settings file
+                    bootstrap::create_settings_file(&project_dir)?;
+
                     println!(
                         "- Project created in {}",
                         project_dir.display().blue().bold()
@@ -99,7 +92,7 @@ async fn main() -> Result<()> {
             }
         }
         Commands::Dev { input_dir, watch } => {
-            if path_to_string(&input_dir)? == path_to_string(&env::current_dir()?)? {
+            if utils::path_to_string(&input_dir)? == utils::path_to_string(&env::current_dir()?)? {
                 println!(
                     "{}",
                     "\nSorry, you cannot use current directory as input directory as output is written to it!"
@@ -110,9 +103,10 @@ async fn main() -> Result<()> {
                 return Ok(());
             }
 
-            let worker = Worker::new(&input_dir, Some(cache))?;
+            let worker = Worker::dev(&input_dir, Some(cache), true)?;
             let output_dir = worker.get_output_dir().to_string();
             let port = worker.get_settings().dev.port;
+            let ws_port = worker.get_settings().dev.ws_port;
 
             // Trigger a build
             if let Err(e) = worker.build() {
@@ -120,25 +114,27 @@ async fn main() -> Result<()> {
             }
 
             // Start dev server
-            tokio::task::spawn(utils::start_dev_server(output_dir, port));
+            tokio::task::spawn(dev_server::start_dev_server(output_dir, port));
 
             if watch {
                 let clients: Clients = Arc::new(Mutex::new(HashMap::new()));
-                tokio::spawn(handle_file_changes(input_dir, worker, clients.clone()));
-            };
 
-            let addr = "127.0.0.1:3001".to_string();
-            println!("✔ Listening socket connections on {}", addr.blue().bold());
+                tokio::spawn(dev_server::handle_file_changes(
+                    input_dir,
+                    worker,
+                    clients.clone(),
+                ));
 
-            let listener = TcpListener::bind(&addr).await?;
+                let addr = format!("0.0.0.0:{}", ws_port);
+                let listener = TcpListener::bind(&addr).await?;
 
-            while let Ok((stream, _)) = listener.accept().await {
-                tokio::spawn(accept_connection(stream, clients.clone()));
+                while let Ok((stream, _)) = listener.accept().await {
+                    tokio::spawn(dev_server::accept_connection(stream, clients.clone()));
+                }
             }
         }
-
         Commands::Build { input_dir } => {
-            let worker = Worker::new(&input_dir, None)?;
+            let worker = Worker::prod(&input_dir)?;
 
             if let Err(e) = worker.build() {
                 println!("- Build failed -> {}", e.to_string().red().bold());
@@ -146,58 +142,6 @@ async fn main() -> Result<()> {
         }
         Commands::Clean {} => {
             cache.clean().context("Failed to clean cache")?;
-        }
-    }
-
-    Ok(())
-}
-
-async fn accept_connection(stream: TcpStream, clients: Clients) -> Result<()> {
-    let addr = stream
-        .peer_addr()
-        .expect("connected streams should have a peer address");
-    println!("Peer address: {}", addr);
-
-    let ws_stream = accept_async(stream).await?;
-
-    let (write, _) = ws_stream.split();
-
-    clients.lock().await.insert(addr.to_string(), write);
-
-    Ok(())
-}
-
-async fn handle_file_changes(input_dir: PathBuf, worker: Worker, clients: Clients) -> Result<()> {
-    println!(
-        "✔ Watching for changes in -> {}",
-        input_dir.display().blue().bold()
-    );
-
-    let (tx, rx) = std::sync::mpsc::channel();
-    let mut debouncer = new_debouncer(Duration::from_secs(1), None, tx).unwrap();
-    debouncer
-        .watcher()
-        .watch(input_dir.as_path(), RecursiveMode::Recursive)
-        .expect("Failed to watch content folder!");
-
-    for result in rx {
-        match result {
-            Err(errors) => errors.iter().for_each(|error| println!("{error:?}")),
-            Ok(_) => {
-                println!("{}", "\n✔ Changes detected, rebuilding...".cyan());
-                /* Ok is not working here for some reason */
-                if let Err(e) = worker.build() {
-                    println!("- Build failed -> {}", e.to_string().red().bold());
-                } else {
-                    // Send message to all clients to reload
-                    let mut clients = clients.lock().await;
-                    for (_, client) in clients.iter_mut() {
-                        client
-                            .send(tungstenite::Message::Text("reload".to_string()))
-                            .await?;
-                    }
-                }
-            }
         }
     }
 

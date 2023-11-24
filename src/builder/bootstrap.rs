@@ -1,18 +1,17 @@
-use std::{
-    format, fs,
-    io::Write,
-    path::{Path, PathBuf},
-    println,
-};
-
-use super::utils::create_dir_in_path;
-use crate::builder::utils::path_to_string;
+use super::settings::Settings;
+use crate::builder::utils;
 use anyhow::{Context, Result};
 use async_recursion::async_recursion;
 use owo_colors::OwoColorize;
 use reqwest::{
     header::{HeaderMap, USER_AGENT},
     Client,
+};
+use std::{
+    format, fs,
+    io::Write,
+    path::{Path, PathBuf},
+    println,
 };
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
@@ -93,8 +92,8 @@ async fn download_folder(
 }
 
 pub async fn download_theme(project_dir: &PathBuf, theme: &str) -> Result<()> {
-    create_dir_in_path(project_dir)?;
-    let project_dir = path_to_string(project_dir)?;
+    utils::create_dir_in_path(project_dir)?;
+    let project_dir = utils::path_to_string(project_dir)?;
 
     let client = Client::new();
     let repo_owner = "AvaterClasher";
@@ -103,6 +102,13 @@ pub async fn download_theme(project_dir: &PathBuf, theme: &str) -> Result<()> {
     println!("- Downloading theme {}", theme.bold().blue());
 
     download_folder(&project_dir, theme, &client, repo_owner, repo_name, theme).await?;
+
+    Ok(())
+}
+
+pub fn create_settings_file(project_dir: &PathBuf) -> Result<()> {
+    let settings = Settings::default().to_toml()?;
+    fs::write(Path::new(project_dir).join("Settings.toml"), settings)?;
 
     Ok(())
 }
