@@ -7,7 +7,6 @@ sitemap_base_url = "https://avaterclasher.github.io/mextron/"
 
 [meta]
 title = "Mextron"
-
 description = "Blazing fast static site generator written in Rust"
 
 
