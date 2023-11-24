@@ -30,16 +30,17 @@ pub struct Worker {
     theme_dir: String,
     output_dir: String,
     config_file: String,
-    cache: cache::Cache,
+    cache: Option<cache::Cache>,
 }
 
 impl Worker {
-    pub fn new(input_dir: &Path, cache: cache::Cache) -> Result<Self> {
+    pub fn new(input_dir: &Path, cache: Option<cache::Cache>) -> Result<Self> {
         let output_dir = OUTPUT_DIR;
         let pages_dir = path_to_string(&input_dir.join(PAGES_DIR))?;
         let public_dir = path_to_string(&input_dir.join(PUBLIC_DIR))?;
         let theme_dir = path_to_string(&input_dir.join(THEME_DIR))?;
         let config_file = path_to_string(&input_dir.join("Settings.toml"))?;
+        create_dir_in_path(&PathBuf::from(output_dir))?;
 
         Ok(Self {
             output_dir: output_dir.to_string(),
