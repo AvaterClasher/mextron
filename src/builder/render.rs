@@ -43,7 +43,7 @@ impl Render {
         Self {
             file: file.to_string(),
             theme_dir: theme_dir.to_string(),
-            settings: settings.clone(),
+            settings,
             cache,
         }
     }
@@ -58,11 +58,8 @@ impl Render {
             None
         };
         let content = if let Some(metadata) = &metadata {
-            let content = self
-                .render_body(&markdown, &metadata, site_directory)
-                .with_context(|| format!("Failed to render page: {}", self.file))?;
-
-            content
+            self.render_body(&markdown, metadata, site_directory)
+                .with_context(|| format!("Failed to render page: {}", self.file))?
         } else {
             markdown
         };
@@ -168,7 +165,7 @@ impl Render {
                 .with_context(|| format!("Failed to get markdown from captures: {}", self.file))?
                 .as_str();
 
-            let parser = pulldown_cmark::Parser::new_ext(&markdown, pulldown_cmark::Options::all());
+            let parser = pulldown_cmark::Parser::new_ext(markdown, pulldown_cmark::Options::all());
             let mut content = String::new();
             pulldown_cmark::html::push_html(&mut content, parser);
 
@@ -194,16 +191,16 @@ impl Render {
                 .with_context(|| format!("Failed to get template from metadata: {}", self.file))?;
 
             let metadata = insert_kv_into_yaml(
-                &metadata,
+                metadata,
                 "body",
                 &serde_yaml::Value::String(body.to_string()),
             )?;
-            let metadata = insert_kv_into_yaml(&metadata, "root", &site_directory)?;
+            let metadata = insert_kv_into_yaml(&metadata, "root", site_directory)?;
 
             // println!("{}", serde_json::to_string_pretty(&metadata)?);
 
             let body =
-                Handlebars::new().render_template(&self.get_template(&template)?, &metadata)?;
+                Handlebars::new().render_template(&self.get_template(template)?, &metadata)?;
 
             Ok(body)
         } else {
