@@ -14,6 +14,7 @@ description = "Blazing fast static site generator written in Rust"
 [navigation] 
 links = [
     { label = "~/", url = "/" },
+    { label = "Blog", url = "/blog"},
     { label = "About", url = "/about"},
     { label = "GitHub", url = "https://github.com/AvaterClasher/mextron" },
     { label = "Website", url = "https://soumyadipmoni.netlify.app" },
