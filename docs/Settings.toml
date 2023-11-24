@@ -19,8 +19,8 @@ base_url = "https://avaterclasher.github.io/mextron/"
 [navigation] 
 links = [
     { label = "~/", url = "/" },
-    { label = "Blog", url = "/blog"},
-    { label = "About", url = "/about"},
+    { label = "Blog", url = "/blog/"},
+    { label = "About", url = "/about/"},
     { label = "GitHub", url = "https://github.com/AvaterClasher/mextron" },
     { label = "Website", url = "https://soumyadipmoni.netlify.app" },
 ]
