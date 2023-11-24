@@ -3,7 +3,8 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<meta name="description" content="{meta_description}" />
+		{{{open_graph_tags}}}
+
 		<meta
 			name="google-site-verification"
 			content="000VUoD6Cga6Y1fuCKyFZEmsPTn0klX_7aKgKZC1Tos"
@@ -25,12 +26,11 @@
 			{{{styles}}}
 		</style>
 
-		<title>{{meta_title}}</title>
+		<title>{{title}}</title>
 	</head>
 
 	<body>
 		<main class="container">
-
 			<nav>
 				<ul>
 					{{#each links}}
@@ -40,12 +40,16 @@
 			</nav>
 
 			<hgroup>
-				<h1>{{meta_title}}</h1>
-				<h2>{{meta_description}}</h2>
+				{{#if page_metadata.title}}
+					<h1>{{page_metadata.title}}</h1>
+					<h2>{{page_metadata.description}}</h2>
+				{{else}}
+					<h1>{{title}}</h1>
+					<h2>{{description}}</h2>
+				{{/if}}
 			</hgroup>
 
 			{{{content}}}
-
 		</main>
 
 		{{#if code_highlighting}}
@@ -75,7 +79,7 @@
 			>
 				Soumyadip Moni
 			</a>
-			• 
+			•
 			<a
 				target="_blank"
 				rel="noopener noreferrer"

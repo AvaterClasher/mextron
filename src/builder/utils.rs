@@ -1,7 +1,8 @@
+use std::{fs, net::SocketAddr, path::PathBuf};
+
 use anyhow::{Context, Result};
 use axum::Router;
 use owo_colors::OwoColorize;
-use std::{fs, net::SocketAddr, path::PathBuf};
 use tower_http::{services::ServeDir, trace::TraceLayer};
 
 pub fn create_dir_in_path(path: &PathBuf) -> Result<()> {
@@ -37,4 +38,20 @@ pub async fn start_dev_server(output_dir: String, port: u16) -> Result<()> {
         .await?;
 
     Ok(())
+}
+
+pub fn parse_string_to_yaml(string: &str) -> Result<serde_yaml::Value> {
+    let metadata: serde_yaml::Value = serde_yaml::from_str(string)?;
+    Ok(metadata)
+}
+
+pub fn insert_kv_into_yaml(
+    yaml: &serde_yaml::Value,
+    key: &str,
+    value: &serde_yaml::Value,
+) -> Result<serde_yaml::Value> {
+    let mut yaml = yaml.clone();
+    yaml[key] = value.clone();
+
+    Ok(yaml)
 }

@@ -1,3 +1,7 @@
+use std::env;
+use std::path::PathBuf;
+use std::{thread, time::Duration};
+
 use crate::builder::bootstrap;
 use crate::builder::utils::path_to_string;
 use crate::builder::Worker;
@@ -5,9 +9,6 @@ use anyhow::{Ok, Result};
 use builder::utils;
 use clap::{Parser, Subcommand};
 use owo_colors::OwoColorize;
-use std::env;
-use std::path::PathBuf;
-use std::{thread, time::Duration};
 
 mod builder;
 
@@ -62,6 +63,7 @@ async fn main() -> Result<()> {
     match args.command {
         Commands::New { project_dir, theme } => {
             println!("{}...", "\n- Creating new project".bold());
+
             match bootstrap::download_theme(&project_dir, &theme).await {
                 Err(e) => {
                     println!("- {}", e.to_string().red().bold());
@@ -74,7 +76,7 @@ async fn main() -> Result<()> {
                 }
             }
         }
-        Commands::Dev { watch, input_dir } => {
+        Commands::Dev { input_dir, watch } => {
             if path_to_string(&input_dir)? == path_to_string(&env::current_dir()?)? {
                 println!(
                     "{}",
@@ -85,6 +87,7 @@ async fn main() -> Result<()> {
 
                 return Ok(());
             }
+
             let worker = Worker::new(&input_dir)?;
             let output_dir = worker.get_output_dir().to_string();
             let port = worker.get_settings().dev.port.clone();
@@ -109,6 +112,7 @@ async fn main() -> Result<()> {
                     hotwatch
                         .watch(input_dir, move |_| {
                             println!("\n- {}", "File(s) changed".bold().yellow());
+
                             // Rebuild on changes
                             match worker.build() {
                                 Err(e) => {
@@ -137,6 +141,7 @@ async fn main() -> Result<()> {
         }
         Commands::Build { input_dir } => {
             let worker = Worker::new(&input_dir)?;
+
             match worker.build() {
                 Err(e) => {
                     println!("- Build failed -> {}", e.to_string().red().bold());

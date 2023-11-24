@@ -4,7 +4,7 @@ title: blog
 author: Soumyadip Moni
 author_link: https://github.com/AvaterClasher
 date_published: 23 November, 2023
-footnote: FYI, you can use Markdown syntax in this page.
+some_data: FYI, you can use Markdown syntax in this page.
 ---
 
 When I first tried CSS-in-JS libraries like [Styled Components](https://styled-components.com/) and [Emotion](https://emotion.sh), the thing that felt right about it was passing values or state directly into the styles for a component. It really closed the loop with the concept of React where the UI is a function of state. While this was a definite advancement over the traditional way of styling React with classes and pre-processed CSS, it still had its problems.

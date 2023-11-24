@@ -23,10 +23,12 @@ hotwatch = "0.5.0"
 minify-html = "0.11.1"
 owo-colors = "3.5.0"
 pulldown-cmark = "0.9.3"
+rayon = "1.8.0"
 regex = "1.10.2"
 reqwest = {version = "0.11.22", features = ["json"] }
 serde = "1.0.193"
 serde_json = "1.0.108"
+serde_yaml = "0.9.27"
 sitewriter = "1.0.3"
 slugify = "0.1.0"
 tokio = { version =  "1.28.2", features = ["full"] }
