@@ -32,7 +32,7 @@ rayon = "1.8.0"
 regex = "1.10.2"
 reqwest = {version = "0.11.22", features = ["json","blocking"] }
 serde = "1.0.193"
-serde_json = "1.0.108"
+serde_json = { version = "1.0.108", features = ["preserve_order"] }
 serde_yaml = "0.9.27"
 sitewriter = "1.0.3"
 slugify = "0.1.0"
