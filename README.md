@@ -2,7 +2,9 @@
 
 # Mextron
 
+![Art by Crayon](https://mextron.vercel.app/images/og.png)
 [![crates.io](https://img.shields.io/crates/v/mextron)](https://crates.io/crates/mextron)
+![Crates.io](https://img.shields.io/crates/d/rustyink)
 [![Build & test](https://github.com/AvaterClasher/mextron/actions/workflows/build_test.yml/badge.svg)](https://github.com/AvaterClasher/mextron/actions/workflows/build_test.yml)
 [![Publish to Pages](https://github.com/AvaterClasher/mextron/actions/workflows/static.yml/badge.svg)](https://github.com/AvaterClasher/mextron/actions/workflows/static.yml)
 
@@ -83,14 +85,14 @@ A custom template say `blog`, with lists all pages under `blog` folder.
 
 ```handlebars
 <ul>
-   {{#each root.blog}}
-       {{#if (not (eq @key "_self"))}}
-	     <hgroup>
-		 <h4><a href="{{@key}}/">{{this.title}}</a></h4>
-		 <h2>{{this.author}}</h2>
-	     </hgroup>
-       {{/if}}
-   {{/each}}
+	{{#each root.blog}}
+		{{#if (not (eq @key "_self"))}}
+			<hgroup>
+				<h4><a href="{{@key}}/">{{this.title}}</a></h4>
+				<h2>{{this.author}}</h2>
+			</hgroup>
+		{{/if}}
+	{{/each}}
 </ul>
 ```
 
