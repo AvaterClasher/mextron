@@ -67,8 +67,8 @@ enum Commands {
 async fn main() -> Result<()> {
     let args = Cli::parse();
 
-    let project_dirs =
-        ProjectDirs::from("io", "github", "mextron").context("Failed to get project directories")?;
+    let project_dirs = ProjectDirs::from("io", "github", "mextron")
+        .context("Failed to get project directories")?;
     let cache_dir = project_dirs.cache_dir().to_string_lossy().to_string();
     let cache = cache::Cache::new(cache_dir)?;
 
