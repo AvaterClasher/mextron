@@ -1,9 +1,10 @@
 use anyhow::{Context, Result};
-use builder::{cache, utils, Worker};
+use builder::{cache, Worker};
 use clap::{Parser, Subcommand};
 use dev::server::Clients;
 use directories::ProjectDirs;
 use owo_colors::OwoColorize;
+use shared::utils;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -91,6 +92,7 @@ async fn main() -> Result<()> {
                 }
             }
         }
+
         Commands::Dev { input_dir, watch } => {
             if utils::path_to_string(&input_dir)? == utils::path_to_string(&env::current_dir()?)? {
                 println!(
