@@ -19,6 +19,7 @@ pub mod cache;
 pub mod dev_server;
 mod render;
 mod seo;
+mod handlebar_helpers;
 pub mod settings;
 pub mod utils;
 
@@ -135,6 +136,7 @@ impl Worker {
             .map(|e| e.path().display().to_string())
             .collect();
 
+        // Used for generating site directory
         let all_pages_with_metadata: Vec<(String, String)> = markdown_files
             .par_iter()
             .map(|x| {

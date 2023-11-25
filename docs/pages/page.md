@@ -70,10 +70,12 @@ A custom template say `blog`, with lists all pages under `blog` folder.
 Then define a new page under blog folder and specify the template as `blog` which we have created as shown above.
 
 ```md
---
+---
 template: blog
 title: ~/Mextron/blog
---
+---
 
 ### This is a blog index
+
+## This is a blog hello
 ```

@@ -3,7 +3,7 @@ use std::{fs, path::Path};
 use crate::builder::utils::download_url_as_string;
 
 use super::{
-    cache,
+    cache, handlebar_helpers,
     seo::generate_open_graph_tags,
     settings::{self, Link},
     utils::{insert_kv_into_yaml, parse_string_to_yaml},
@@ -14,11 +14,12 @@ use rayon::prelude::*;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 
-pub struct Render {
+pub struct Render<'a> {
     file: String,
     theme_dir: String,
     settings: settings::Settings,
     cache: Option<cache::Cache>,
+    handlebars: Handlebars<'a>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -33,18 +34,23 @@ struct RenderData {
     content: String,
 }
 
-impl Render {
+impl Render<'_> {
     pub fn new(
         file: &str,
         theme_dir: &str,
         settings: settings::Settings,
         cache: Option<cache::Cache>,
     ) -> Self {
+        let mut handlebars = Handlebars::new();
+        handlebars.register_helper("slice", Box::new(handlebar_helpers::SliceHelper));
+        handlebars.register_helper("stringify", Box::new(handlebar_helpers::StringifyHelper));
+
         Self {
             file: file.to_string(),
             theme_dir: theme_dir.to_string(),
             settings,
             cache,
+            handlebars,
         }
     }
 
@@ -64,19 +70,22 @@ impl Render {
             markdown
         };
 
-        let html = Handlebars::new().render_template(
-            &self.get_template("app")?,
-            &RenderData {
-                title: self.settings.meta.title.clone(),
-                description: self.settings.meta.description.clone(),
-                open_graph_tags: generate_open_graph_tags(&self.settings)?,
-                content,
-                styles: self.get_global_styles()?,
-                scripts: self.get_global_scripts()?,
-                links: self.settings.navigation.links.clone(),
-                page_metadata: metadata,
-            },
-        )?;
+        let html = self
+            .handlebars
+            .render_template(
+                &self.get_template("app").context("Failed to get template")?,
+                &RenderData {
+                    title: self.settings.meta.title.clone(),
+                    description: self.settings.meta.description.clone(),
+                    open_graph_tags: generate_open_graph_tags(&self.settings)?,
+                    content,
+                    styles: self.get_global_styles()?,
+                    scripts: self.get_global_scripts()?,
+                    links: self.settings.navigation.links.clone(),
+                    page_metadata: metadata,
+                },
+            )
+            .context("Failed to render page")?;
 
         Ok(html)
     }
@@ -209,8 +218,9 @@ impl Render {
 
             // println!("{}", serde_json::to_string_pretty(&metadata)?);
 
-            let body =
-                Handlebars::new().render_template(&self.get_template(template)?, &metadata)?;
+            let body = self
+                .handlebars
+                .render_template(&self.get_template(template)?, &metadata)?;
 
             Ok(body)
         } else {
