@@ -3,7 +3,8 @@ use anyhow::{Context, Result};
 use chrono::prelude::*;
 use sitewriter::{ChangeFreq, UrlEntry};
 
-   let blocked = settings.get_site_settings().is_search_engine_blocked();
+pub fn generate_robots_txt(settings: &Settings) -> Result<String> {
+    let blocked = settings.get_site_settings().is_search_engine_blocked();
 
     let robots = if blocked {
         String::from("User-agent: *\nDisallow: /")
