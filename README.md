@@ -83,14 +83,14 @@ A custom template say `blog`, with lists all pages under `blog` folder.
 
 ```handlebars
 <ul>
-	{{#each root.blog}}
-		{{#if (not (eq @key "_self"))}}
-			<hgroup>
-				<h4><a href="{{@key}}/">{{this.title}}</a></h4>
-				<h2>{{this.author}}</h2>
-			</hgroup>
-		{{/if}}
-	{{/each}}
+   {{#each root.blog}}
+       {{#if (not (eq @key "_self"))}}
+	     <hgroup>
+		 <h4><a href="{{@key}}/">{{this.title}}</a></h4>
+		 <h2>{{this.author}}</h2>
+	     </hgroup>
+       {{/if}}
+   {{/each}}
 </ul>
 ```
 
