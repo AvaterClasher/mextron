@@ -1,4 +1,4 @@
-use super::settings::Settings;
+use crate::shared::settings::Settings;
 use anyhow::{Context, Result};
 use chrono::prelude::*;
 use sitewriter::{ChangeFreq, UrlEntry};

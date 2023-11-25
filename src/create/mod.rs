@@ -1,5 +1,4 @@
-use super::settings::Settings;
-use crate::builder::utils;
+use crate::{builder::utils, shared::settings::Settings};
 use anyhow::{Context, Result};
 use async_recursion::async_recursion;
 use owo_colors::OwoColorize;
@@ -91,7 +90,7 @@ async fn download_folder(
     Ok(())
 }
 
-pub async fn download_theme(project_dir: &PathBuf, theme: &str) -> Result<()> {
+pub async fn project(project_dir: &PathBuf, theme: &str) -> Result<()> {
     utils::create_dir_in_path(project_dir)?;
     let project_dir = utils::path_to_string(project_dir)?;
 
@@ -106,8 +105,8 @@ pub async fn download_theme(project_dir: &PathBuf, theme: &str) -> Result<()> {
     Ok(())
 }
 
-pub fn create_settings_file(project_dir: &PathBuf) -> Result<()> {
-    let settings = Settings::default().to_toml()?;
+pub fn settings_file(project_dir: &PathBuf) -> Result<()> {
+    let settings = Settings::default().to_toml_string()?;
     fs::write(Path::new(project_dir).join("Settings.toml"), settings)?;
 
     Ok(())

@@ -1,7 +1,7 @@
-use std::{fs, path::PathBuf};
-
 use super::cache::Cache;
 use anyhow::{Context, Result};
+use serde_yaml::Value;
+use std::{fs, path::PathBuf};
 
 pub fn create_dir_in_path(path: &PathBuf) -> Result<()> {
     if fs::metadata(path).is_err() {
@@ -25,17 +25,6 @@ pub fn parse_string_to_yaml(string: &str) -> Result<serde_yaml::Value> {
     Ok(metadata)
 }
 
-pub fn insert_kv_into_yaml(
-    yaml: &serde_yaml::Value,
-    key: &str,
-    value: &serde_yaml::Value,
-) -> Result<serde_yaml::Value> {
-    let mut yaml = yaml.clone();
-    yaml[key] = value.clone();
-
-    Ok(yaml)
-}
-
 pub fn download_url_as_string(url: &str, cache: Option<Cache>) -> Result<String> {
     let content = cache.as_ref().and_then(|c| c.get(url));
     if let Some(content) = content {
@@ -51,4 +40,17 @@ pub fn download_url_as_string(url: &str, cache: Option<Cache>) -> Result<String>
     }
 
     Ok(content)
+}
+
+pub fn merge_yaml_values(base: Value, other: Value) -> Value {
+    match (base, other) {
+        (Value::Mapping(mut base_map), Value::Mapping(other_map)) => {
+            for (key, other_value) in other_map {
+                let base_value = base_map.entry(key).or_insert(Value::Null);
+                *base_value = merge_yaml_values(base_value.clone(), other_value);
+            }
+            Value::Mapping(base_map)
+        }
+        (_, other) => other,
+    }
 }

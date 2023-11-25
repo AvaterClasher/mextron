@@ -1,20 +1,20 @@
+use anyhow::{Context, Result};
+use builder::{cache, utils, Worker};
+use clap::{Parser, Subcommand};
+use dev::server::Clients;
+use directories::ProjectDirs;
+use owo_colors::OwoColorize;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::{env, println};
-
-use crate::builder::bootstrap;
-use crate::builder::dev_server::Clients;
-use crate::builder::Worker;
-use anyhow::{Context, Result};
-use builder::{cache, dev_server, utils};
-use clap::{Parser, Subcommand};
-use directories::ProjectDirs;
-use owo_colors::OwoColorize;
 use tokio::net::TcpListener;
 use tokio::sync::Mutex;
 
 mod builder;
+mod create;
+mod dev;
+mod shared;
 
 #[derive(Debug, Parser)]
 #[command(name = "mextron")]
@@ -67,7 +67,7 @@ enum Commands {
 async fn main() -> Result<()> {
     let args = Cli::parse();
 
-    let project_dirs = ProjectDirs::from("io", "github", "mextron")
+    let project_dirs = ProjectDirs::from("io/mextron", "github", "avaterclasher")
         .context("Failed to get project directories")?;
     let cache_dir = project_dirs.cache_dir().to_string_lossy().to_string();
     let cache = cache::Cache::new(cache_dir)?;
@@ -76,13 +76,13 @@ async fn main() -> Result<()> {
         Commands::New { project_dir, theme } => {
             println!("{}...", "\n- Creating new project".bold());
 
-            match bootstrap::download_theme(&project_dir, &theme).await {
+            match create::project(&project_dir, &theme).await {
                 Err(e) => {
                     println!("- {}", e.to_string().red().bold());
                 }
                 _ => {
                     // Create settings file
-                    bootstrap::create_settings_file(&project_dir)?;
+                    create::settings_file(&project_dir)?;
 
                     println!(
                         "- Project created in {}",
@@ -114,12 +114,12 @@ async fn main() -> Result<()> {
             }
 
             // Start dev server
-            tokio::task::spawn(dev_server::start_dev_server(output_dir, port));
+            tokio::task::spawn(dev::server::start(output_dir, port));
 
             if watch {
                 let clients: Clients = Arc::new(Mutex::new(HashMap::new()));
 
-                tokio::spawn(dev_server::handle_file_changes(
+                tokio::spawn(dev::server::handle_file_changes(
                     input_dir,
                     worker,
                     clients.clone(),
@@ -129,7 +129,7 @@ async fn main() -> Result<()> {
                 let listener = TcpListener::bind(&addr).await?;
 
                 while let Ok((stream, _)) = listener.accept().await {
-                    tokio::spawn(dev_server::accept_connection(stream, clients.clone()));
+                    tokio::spawn(dev::server::accept_connection(stream, clients.clone()));
                 }
             }
         }

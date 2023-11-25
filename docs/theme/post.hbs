@@ -1,26 +1,23 @@
 <article>
 	<header>
-		{{#if author}}
+		{{#if data.author}}
 			<p>
-				{{#if author_link}}
+				{{#if data.author_link}}
 					<small>// Written by
-						<a href="{{author_link}}">{{author}}</a></small>
+						<a
+							href="{{data.author_link}}"
+						>{{data.author}}</a></small>
 				{{else}}
-					<small>// Written by {{author}}</small>
+					<small>// Written by {{data.author}}</small>
 				{{/if}}
 			</p>
 		{{/if}}
 
-		{{#if date_published}}
-			<p><small>// {{date_published}}</small></p>
+		{{#if data.date_published}}
+			<p><small>// {{data.date_published}}</small></p>
 		{{/if}}
 	</header>
 
 	{{{body}}}
 
-	{{#if some_data}}
-		<footer><small>
-				{{some_data}}
-			</small></footer>
-	{{/if}}
 </article>

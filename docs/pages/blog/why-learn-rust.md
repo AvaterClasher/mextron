@@ -3,7 +3,7 @@ template: post
 title: "Why I Decided to Learn Rust"
 author: ChatGPT
 author_link: https://chat.openai.com
-date_published: 6 June, 2023
+date_published: 1663804800004
 ---
 
 <!-- @format -->
