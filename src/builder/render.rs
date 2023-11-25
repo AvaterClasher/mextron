@@ -32,6 +32,7 @@ struct RenderData {
     links: Vec<Link>,
     page_metadata: Option<serde_yaml::Value>,
     content: String,
+    data: Option<toml::Value>,
 }
 
 impl Render<'_> {
@@ -83,6 +84,7 @@ impl Render<'_> {
                     scripts: self.get_global_scripts()?,
                     links: self.settings.navigation.links.clone(),
                     page_metadata: metadata,
+                    data: self.settings.data.clone(),
                 },
             )
             .context("Failed to render page")?;
@@ -223,8 +225,12 @@ impl Render<'_> {
             )?;
             let metadata = insert_kv_into_yaml(&metadata, "root", site_directory)?;
 
-            // println!("{}", serde_json::to_string_pretty(&metadata)?);
-
+            let metadata = if let Some(data) = self.settings.get_data_yaml()? {
+                insert_kv_into_yaml(&metadata, "data", &data)?
+            } else {
+                metadata
+            };
+            
             let body = self
                 .handlebars
                 .render_template(&self.get_template(template)?, &metadata)?;
