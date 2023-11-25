@@ -151,6 +151,9 @@ links = [
 [data] # The data to be passed to every page, can be accessed using `data` object in every page
 author = "Soumyadip Moni"
 author_link = "https://github.com/AvaterClasher"
+
+[remote_data] # The remote data to be fetched and passed to every page, can be accessed using `remote_data` object
+repo_meta = "https://api.github.com/repos/AvaterClasher/mextron" # The url of the remote data
 ```
 
 ## Handlebars Helpers

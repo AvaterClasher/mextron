@@ -29,3 +29,6 @@ links = [
 [data]
 author = "Soumyadip Moni"
 author_link = "https://github.com/AvaterClasher"
+
+[remote_data]
+repo_meta = "https://api.github.com/repos/AvaterClasher/mextron"

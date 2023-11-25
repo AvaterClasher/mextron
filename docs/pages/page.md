@@ -117,7 +117,7 @@ title: ~/Mextron/blog
 ### This is a blog index
 ```
 
-## The `Settings.toml` file
+## The Settings file
 
 The `Settings.toml` file contains the settings of the website, you can customize the website by changing the values in this file.
 
@@ -148,9 +148,12 @@ links = [
   { label = "About", url = "/about/" },
 ]
 
-[data] # The data to be passed to every page, can be accessed using `data` object in every page
+[data] # The data to be passed to every page, can be accessed using `data` object
 author = "Soumyadip Moni"
 author_link = "https://github.com/AvaterClasher"
+
+[remote_data] # The remote data to be fetched and passed to every page, can be accessed using `remote_data` object
+repo_meta = "https://api.github.com/repos/AvaterClasher/mextron" # The url of the remote data
 ```
 
 ## Handlebars Helpers
