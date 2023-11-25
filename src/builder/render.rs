@@ -144,7 +144,9 @@ impl Render<'_> {
             .collect::<Vec<String>>()
             .join("\n");
 
-        Ok(downloaded_styles + "\n" + styles.as_str())
+        let style_tag = format!("<style>{}{}</style>", styles, downloaded_styles);
+
+        Ok(style_tag)
     }
 
     fn get_global_scripts(&self) -> Result<String> {
@@ -165,7 +167,12 @@ impl Render<'_> {
             .collect::<Vec<String>>()
             .join("\n");
 
-        Ok(downloaded_scripts)
+        let script_tag = format!(
+            "<script type=\"text/javascript\">{}</script>",
+            downloaded_scripts
+        );
+
+        Ok(script_tag)
     }
 
     fn get_markdown_and_metadata(&self) -> Result<(Option<String>, String)> {
