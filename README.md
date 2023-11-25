@@ -106,3 +106,7 @@ title: ~/Mextron/blog
 
 ### This is a blog index
 ```
+
+# LICENSE
+
+You can find the license [here](https://github.com/AvaterClasher/mextron/blob/main/LICENSE).
