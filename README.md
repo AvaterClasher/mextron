@@ -2,11 +2,12 @@
 
 # Mextron
 
-![Art by Crayon](https://mextron.vercel.app/images/og.png)
 [![crates.io](https://img.shields.io/crates/v/mextron)](https://crates.io/crates/mextron)
 ![Crates.io](https://img.shields.io/crates/d/mextron)
 [![Build & test](https://github.com/AvaterClasher/mextron/actions/workflows/build_test.yml/badge.svg)](https://github.com/AvaterClasher/mextron/actions/workflows/build_test.yml)
 [![Publish to Pages](https://github.com/AvaterClasher/mextron/actions/workflows/static.yml/badge.svg)](https://github.com/AvaterClasher/mextron/actions/workflows/static.yml)
+![Art by Crayon](https://mextron.vercel.app/images/og.png)
+
 
 A blazing fast static site generator in Rust
 
