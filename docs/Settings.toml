@@ -13,8 +13,8 @@ style_urls = [
 [meta]
 title = "Mextron"
 description = "Blazing fast static site generator written in Rust"
-og_image_url = "https://avaterclasher.github.io/mextron/images/og.png"
-base_url = "https://avaterclasher.github.io/mextron/"
+og_image_url = "https://mextron.vercel.app/images/og.png"
+base_url = "https://mextron.vercel.app"
 
 
 [navigation] 

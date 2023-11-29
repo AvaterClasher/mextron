@@ -10,7 +10,7 @@ use owo_colors::OwoColorize;
 use rayon::prelude::*;
 use slugify::slugify;
 use std::{
-    fs,
+    env, fs,
     path::{Path, PathBuf},
 };
 use tokio::time::Instant;
@@ -37,7 +37,12 @@ pub struct Worker {
 }
 
 impl Worker {
-    pub fn dev(input_dir: &Path, cache: Option<cache::Cache>, is_dev: bool) -> Result<Self> {
+    pub fn dev(
+        input_dir: Option<PathBuf>,
+        cache: Option<cache::Cache>,
+        is_dev: bool,
+    ) -> Result<Self> {
+        let input_dir = input_dir.unwrap_or_else(|| env::current_dir().unwrap());
         let output_dir = OUTPUT_DIR;
         let pages_dir = utils::path_to_string(&input_dir.join(PAGES_DIR))?;
         let public_dir = utils::path_to_string(&input_dir.join(PUBLIC_DIR))?;

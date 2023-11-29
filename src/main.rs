@@ -20,7 +20,7 @@ mod shared;
 #[derive(Debug, Parser)]
 #[command(name = "mextron")]
 #[command(bin_name = "mextron")]
-#[command(about = "A blazing fast static site generator", long_about = None)]
+#[command(about = "A blazing fast static site generator in Rust ", long_about = None)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -46,8 +46,8 @@ enum Commands {
     /// Start dev mode
     #[command()]
     Dev {
-        #[clap(required = true, help = "Input directory")]
-        input_dir: PathBuf,
+        #[clap(required = false, help = "Input directory")]
+        input_dir: Option<PathBuf>,
 
         /// Watch for changes
         #[clap(short = 'w', long = "watch")]
@@ -56,8 +56,8 @@ enum Commands {
     /// Build the site
     #[command()]
     Build {
-        #[clap(required = true, help = "Input directory")]
-        input_dir: PathBuf,
+        #[clap(required = false, help = "Input directory")]
+        input_dir: Option<PathBuf>,
     },
     /// Clean the site
     #[command()]
@@ -68,7 +68,7 @@ enum Commands {
 async fn main() -> Result<()> {
     let args = Cli::parse();
 
-    let project_dirs = ProjectDirs::from("io/mextron", "github", "avaterclasher")
+    let project_dirs = ProjectDirs::from("app", "vercel", "mextron")
         .context("Failed to get project directories")?;
     let cache_dir = project_dirs.cache_dir().to_string_lossy().to_string();
     let cache = cache::Cache::new(cache_dir)?;
@@ -94,18 +94,8 @@ async fn main() -> Result<()> {
         }
 
         Commands::Dev { input_dir, watch } => {
-            if utils::path_to_string(&input_dir)? == utils::path_to_string(&env::current_dir()?)? {
-                println!(
-                    "{}",
-                    "\nSorry, you cannot use current directory as input directory as output is written to it!"
-                        .red()
-                        .bold()
-                );
-
-                return Ok(());
-            }
-
-            let worker = Worker::dev(&input_dir, Some(cache), true)?;
+            let input_dir = input_dir.unwrap_or_else(|| env::current_dir().unwrap());
+            let worker = Worker::dev(Some(input_dir.clone()), Some(cache), true)?;
             let output_dir = worker.get_output_dir().to_string();
             let port = worker.get_settings().dev.port;
             let ws_port = worker.get_settings().dev.ws_port;
@@ -136,6 +126,7 @@ async fn main() -> Result<()> {
             }
         }
         Commands::Build { input_dir } => {
+            let input_dir = input_dir.unwrap_or_else(|| env::current_dir().unwrap());
             let worker = Worker::prod(&input_dir)?;
 
             if let Err(e) = worker.build() {
