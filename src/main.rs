@@ -20,7 +20,7 @@ mod shared;
 #[derive(Debug, Parser)]
 #[command(name = "mextron")]
 #[command(bin_name = "mextron")]
-#[command(about = "A blazing fast static site generator in Rust ", long_about = None)]
+#[command(about = "A blazing fast static site generator in Rust 🦀", long_about = None)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
