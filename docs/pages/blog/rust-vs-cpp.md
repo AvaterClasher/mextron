@@ -1,7 +1,7 @@
 ---
 template: post
 title: "Rust vs. C++: A Modern Perspective"
-author: ChatGPT
+author: Soumyadip Moni
 author_link: https://soumyadipmoni.netlify.app
 date_published: 19th Nov 2023
 ---
