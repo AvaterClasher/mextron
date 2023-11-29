@@ -11,6 +11,7 @@
 A blazing fast static site generator in Rust
 
 > 🚧 This project is currently under development. Expect breaking changes. 🚧
+> 🚧 This Project is currently POSIX friendly. For windows machines please use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install)🚧
 
 A sleek and minimalist static site generator written in Rust. Designed with simplicity in mind, Mextron makes website creation a breeze. It supports Markdown files, allowing you to write content with ease.
 
@@ -38,6 +39,27 @@ You can optionally specify a theme also.
 
 ```bash
 mextron new <folder> -t pico
+```
+
+### Running Mextron in Dev mode
+
+You can run mextron in the dev mode by using the `dev` mode
+There is also a `-w` i.e `watch` feature flag in dev mode for using hot reloading. 
+
+```bash
+mextron dev -w # If you are in the Project Directory 
+# OR
+mextron dev <INPUT_DIRECTORY> -w # If you wanna specify which folder to run
+```
+
+### Running Mextron in Build mode
+
+You can run mextron in the build mode by using the `build` mode
+
+```bash
+mextron build # If you are in the Project Directory 
+# OR
+mextron build <INPUT_DIRECTORY> # If you wanna specify which folder to run
 ```
 
 ### Features
