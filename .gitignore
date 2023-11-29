@@ -14,5 +14,3 @@ target/
 *.pdb
 
 .DS_Store
-
-_site

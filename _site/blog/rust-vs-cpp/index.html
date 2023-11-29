@@ -11,8 +11,8 @@
 <meta property="og:description" content="Blazing fast static site generator written in Rust"/>
 <meta name="twitter:title" content="Mextron"/>
 <meta name="twitter:description" content="Blazing fast static site generator written in Rust"/>
-<meta property="og:url" content="https://avaterclasher.github.io/mextron/"/>
-<meta name="twitter:url" content="https://avaterclasher.github.io/mextron/"/>
+<meta property="og:url" content="https://mextron.vercel.app"/>
+<meta name="twitter:url" content="https://mextron.vercel.app"/>
 <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
 <style>@charset "UTF-8";/*!
  * Pico CSS v1.5.10 (https://picocss.com)
@@ -35,35 +35,47 @@
 </ul>
 </nav>
 <hgroup>
-<h1>Why I Decided to Learn Rust</h1>
+<h1>Rust vs. C++: A Modern Perspective</h1>
 <h2></h2>
 </hgroup>
 <article>
 <header>
 <p>
 <small>// Written by
-<a href="https://chat.openai.com">ChatGPT</a></small>
+<a href="https://soumyadipmoni.netlify.app">ChatGPT</a></small>
 </p>
 <p><small>// 19th Nov 2023</small></p>
 </header>
-<blockquote>
-<p>In case you didn’t notice the author, this is a test blog post written by ChatGPT. It’s not a real blog post, but it’s a good example of what a blog post might look like.</p>
-</blockquote>
-<p>As a TypeScript engineer, I’ve always enjoyed working with a statically typed language that offers excellent tooling and a strong ecosystem. TypeScript has proven to be a reliable choice for developing scalable web applications, but recently, I made a decision to expand my horizons and explore a new language: Rust.</p>
-<h3>The Power of Systems Programming</h3>
-<p>Rust is often praised for its powerful features and its focus on systems programming. While TypeScript excels at building front-end applications and Node.js servers, Rust opens up a whole new world of possibilities. Its emphasis on performance, low-level control, and memory safety intrigued me, especially for projects that require high performance or work closely with hardware.</p>
-<h3>Memory Safety and Performance</h3>
-<p>One of the primary reasons I was drawn to Rust was its memory safety guarantees. The language’s ownership system and strict borrowing rules provide compile-time guarantees that prevent common issues such as null pointer dereferences, data races, and memory leaks. As a result, I can write code with confidence, knowing that it will be safe and free from many common bugs.</p>
-<p>Additionally, Rust’s zero-cost abstractions and efficient memory management ensure that the language performs exceptionally well, even in resource-constrained environments. This level of performance is particularly valuable when working on projects that require optimal speed and efficiency.</p>
-<h3>Building Reliable and Concurrent Systems</h3>
-<p>Another aspect that fascinated me about Rust is its ability to build reliable and concurrent systems. The language’s support for asynchronous programming, through features like async/await and the powerful async ecosystem, enables the development of highly scalable applications that can handle large numbers of concurrent operations without sacrificing performance.</p>
-<p>Moreover, Rust’s emphasis on thread safety and its ownership model make it an excellent choice for building concurrent systems. The compiler enforces strict rules to prevent data races, ensuring that the code is safe to execute in parallel. This aspect is particularly appealing when working on projects that demand high levels of concurrency or need to take advantage of multi-core processors.</p>
-<h3>The Thriving Rust Ecosystem</h3>
-<p>While Rust is a relatively young language, it has already built a thriving ecosystem around it. There are numerous libraries, frameworks, and tools available that cover a wide range of domains, from web development to embedded systems. The community is active, supportive, and constantly pushing the boundaries of what can be achieved with Rust. Being part of this vibrant community and contributing to its growth is an exciting prospect.</p>
-<h3>A New Challenge and Personal Growth</h3>
-<p>As a TypeScript engineer, I love learning new technologies and expanding my skill set. Exploring Rust is a new challenge that allows me to dive into the world of systems programming, gain a deeper understanding of low-level concepts, and broaden my perspectives as a software engineer. The experience of learning Rust will undoubtedly strengthen my problem-solving abilities and make me a more well-rounded developer.</p>
-<h3>Conclusion</h3>
-<p>While TypeScript remains my language of choice for many projects, venturing into Rust has been an incredibly rewarding decision. Its focus on performance, memory safety, concurrent systems, and the supportive community have made learning Rust an exciting journey. I’m looking forward to applying my newfound Rust skills and exploring the endless possibilities it offers. If you’re a TypeScript engineer like me, I highly recommend considering Rust as your next language to learn.</p>
+<h2>Introduction</h2>
+<p>Choosing the right programming language is a critical decision for developers, and the debate between Rust and C++ often comes into play. Both languages are powerful, with deep roots in systems programming, but they exhibit distinct characteristics. In this blog post, we’ll explore why Rust is gaining momentum and how it stands out as a modern alternative to C++.</p>
+<h2>1. <strong>Memory Safety without Sacrificing Control</strong></h2>
+<h3>Rust:</h3>
+<p>Rust’s ownership system, borrowing, and lifetimes enable developers to write code that is both safe and performant. The ownership model eliminates common pitfalls such as null pointer dereferencing and data races, providing a robust foundation for building reliable systems.</p>
+<h3>C++:</h3>
+<p>While C++ offers manual memory management, it comes with the inherent risk of memory-related bugs. Developers must diligently manage memory allocation and deallocation, leading to potential issues like memory leaks and dangling pointers.</p>
+<h2>2. <strong>Concurrency without Data Races</strong></h2>
+<h3>Rust:</h3>
+<p>Rust’s ownership system also ensures thread safety, making concurrent programming more accessible. The ownership model prevents data races by enforcing strict rules on mutable references, allowing developers to write concurrent code with confidence.</p>
+<h3>C++:</h3>
+<p>C++ provides various concurrency features, including threads and mutexes, but developers must manually synchronize access to shared data. The absence of built-in ownership and borrowing mechanisms can lead to complex and error-prone concurrent code.</p>
+<h2>3. <strong>Modern Syntax and Expressiveness</strong></h2>
+<h3>Rust:</h3>
+<p>Rust boasts a modern and expressive syntax that facilitates clean and readable code. Features like pattern matching, algebraic data types, and trait-based generics contribute to code that is not only powerful but also elegant.</p>
+<h3>C++:</h3>
+<p>C++ has evolved over the years, introducing features like lambda expressions and smart pointers. However, its syntax can be more verbose compared to Rust, and certain patterns may be less intuitive.</p>
+<h2>4. <strong>Borrow Checker vs. Manual Memory Management</strong></h2>
+<h3>Rust:</h3>
+<p>Rust’s borrow checker ensures memory safety without the need for garbage collection. Developers benefit from the compiler’s analysis, catching potential issues at compile time and eliminating the need for runtime overhead.</p>
+<h3>C++:</h3>
+<p>C++ provides manual memory management, giving developers fine-grained control over memory allocation and deallocation. However, this control introduces complexity and increases the risk of memory-related errors.</p>
+<h2>5. <strong>Ecosystem and Package Management</strong></h2>
+<h3>Rust:</h3>
+<p>Cargo, Rust’s package manager, simplifies dependency management and project setup. The Rust ecosystem is growing rapidly, with a focus on ease of use and a strong emphasis on open-source collaboration.</p>
+<h3>C++:</h3>
+<p>C++ has several package managers, but there isn’t a single, widely adopted standard. Dependency management can be more challenging, and integrating third-party libraries may require additional effort.</p>
+<h2>Conclusion</h2>
+<p>While both Rust and C++ have their strengths, Rust’s emphasis on memory safety, concurrency, modern syntax, and a growing ecosystem positions it as a compelling choice for developers seeking a balance between performance and safety. Rust’s approach to ownership and borrowing has ushered in a new era of systems programming, making it a language worth considering for your next project.</p>
+<p>Ultimately, the choice between Rust and C++ depends on your specific requirements, preferences, and the nature of the project at hand. As programming languages continue to evolve, the decision becomes more nuanced, and exploring the strengths of each language is essential for informed decision-making.</p>
 </article>
 </main>
 <footer class="container">
@@ -71,7 +83,7 @@
 Built with
 <a href="https://avaterclasher.github.io/mextron" target="_blank" rel="noopener noreferrer">Mextron</a>
 •
-null
+1
 ⭐'s on
 <a target="_blank" rel="noopener noreferrer" href="https://github.com/AvaterClasher/mextron">
 GitHub
