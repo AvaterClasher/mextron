@@ -23,7 +23,6 @@ links = [
     { label = "Blog", url = "/blog/"},
     { label = "About", url = "/about/"},
     { label = "GitHub", url = "https://github.com/AvaterClasher/mextron" },
-    { label = "Website", url = "https://soumyadipmoni.netlify.app" },
 ]
 
 [data]

@@ -208,7 +208,7 @@ name: Publish to Pages
 on:
     # Runs on pushes targeting the default branch
     push:
-        branches: ["main"]
+        branches: ["master"]
 
     # Allows you to run this workflow manually from the Actions tab
     workflow_dispatch:
@@ -253,4 +253,4 @@ jobs:
 
 # LICENSE
 
-You can find the license [here](https://github.com/AvaterClasher/mextron/blob/main/LICENSE).
+You can find the license [here](https://github.com/AvaterClasher/mextron/blob/master/LICENSE).

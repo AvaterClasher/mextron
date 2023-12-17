@@ -2,25 +2,25 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
         <loc>https://mextron.vercel.app/</loc>
-        <lastmod>2023-11-29T11:48:19Z</lastmod>
+        <lastmod>2023-12-17T21:07:09Z</lastmod>
         <priority>0.8</priority>
         <changefreq>weekly</changefreq>
     </url>
     <url>
         <loc>https://mextron.vercel.app/about/</loc>
-        <lastmod>2023-11-29T11:48:19Z</lastmod>
+        <lastmod>2023-12-17T21:07:09Z</lastmod>
         <priority>0.8</priority>
         <changefreq>weekly</changefreq>
     </url>
     <url>
         <loc>https://mextron.vercel.app/blog/</loc>
-        <lastmod>2023-11-29T11:48:19Z</lastmod>
+        <lastmod>2023-12-17T21:07:09Z</lastmod>
         <priority>0.8</priority>
         <changefreq>weekly</changefreq>
     </url>
     <url>
         <loc>https://mextron.vercel.app/blog/rust-vs-cpp</loc>
-        <lastmod>2023-11-29T11:48:19Z</lastmod>
+        <lastmod>2023-12-17T21:07:09Z</lastmod>
         <priority>0.8</priority>
         <changefreq>weekly</changefreq>
     </url>
