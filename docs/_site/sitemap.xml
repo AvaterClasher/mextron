@@ -2,37 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
         <loc>https://mextron.vercel.app/</loc>
-        <lastmod>2023-12-17T22:12:26Z</lastmod>
+        <lastmod>2023-12-17T22:25:05Z</lastmod>
         <priority>0.8</priority>
         <changefreq>weekly</changefreq>
     </url>
     <url>
         <loc>https://mextron.vercel.app/about/</loc>
-        <lastmod>2023-12-17T22:12:26Z</lastmod>
+        <lastmod>2023-12-17T22:25:05Z</lastmod>
         <priority>0.8</priority>
         <changefreq>weekly</changefreq>
     </url>
     <url>
         <loc>https://mextron.vercel.app/blog/</loc>
-        <lastmod>2023-12-17T22:12:26Z</lastmod>
+        <lastmod>2023-12-17T22:25:05Z</lastmod>
         <priority>0.8</priority>
         <changefreq>weekly</changefreq>
     </url>
     <url>
         <loc>https://mextron.vercel.app/blog/slice-helper</loc>
-        <lastmod>2023-12-17T22:12:26Z</lastmod>
+        <lastmod>2023-12-17T22:25:05Z</lastmod>
         <priority>0.8</priority>
         <changefreq>weekly</changefreq>
     </url>
     <url>
         <loc>https://mextron.vercel.app/blog/rust-vs-cpp</loc>
-        <lastmod>2023-12-17T22:12:26Z</lastmod>
+        <lastmod>2023-12-17T22:25:05Z</lastmod>
         <priority>0.8</priority>
         <changefreq>weekly</changefreq>
     </url>
     <url>
         <loc>https://mextron.vercel.app/blog/renderer</loc>
-        <lastmod>2023-12-17T22:12:26Z</lastmod>
+        <lastmod>2023-12-17T22:25:05Z</lastmod>
         <priority>0.8</priority>
         <changefreq>weekly</changefreq>
     </url>
