@@ -43,6 +43,7 @@ You can optionally specify a theme also with the feature flag `-t`.
 ```bash
 mextron new <folder> -t pico
 ```
+> **Disclaimer** - Using this command can return an error due to github api rate limits. Please try again in such situations.
 
 ### Running Mextron in Dev mode
 
