@@ -78,218 +78,67 @@ code {
 			</nav>
 
 			<hgroup>
-					<h1>Mextron</h1>
-					<h2>Blazing fast static site generator written in Rust</h2>
+					<h1>Slice-Helper</h1>
+					<h2></h2>
 			</hgroup>
 
-			<!-- @format -->
-<h1>Mextron</h1>
-<p><img src="https://mextron.vercel.app/images/og.png" alt="Art by Crayon" />
-<a href="https://crates.io/crates/mextron"><img src="https://img.shields.io/crates/v/mextron" alt="crates.io" /></a>
-<img src="https://img.shields.io/crates/d/mextron" alt="Crates.io" />
-<a href="https://github.com/AvaterClasher/mextron/actions/workflows/build_test.yml"><img src="https://github.com/AvaterClasher/mextron/actions/workflows/build_test.yml/badge.svg" alt="Build &amp; test" /></a>
-<a href="https://github.com/AvaterClasher/mextron/actions/workflows/static.yml"><img src="https://github.com/AvaterClasher/mextron/actions/workflows/static.yml/badge.svg" alt="Publish to Pages" /></a></p>
-<p>A blazing fast static site generator in Rust</p>
-<blockquote>
-<p>🚧 This project is currently under development. Expect breaking changes. 🚧</p>
-</blockquote>
-<blockquote>
-<p>🚧 This Project is currently POSIX friendly. For windows please use <a href="https://learn.microsoft.com/en-us/windows/wsl/install">WSL</a>🚧</p>
-</blockquote>
-<p>A sleek and minimalist static site generator written in Rust. Designed with simplicity in mind, Mextron makes website creation a breeze. It supports Markdown files, allowing you to write content with ease.</p>
-<h3>DEMO</h3>
-<p>Here is a live <a href="https://mextron.vercel.app">DEMO</a> my blog is built using Mextron.</p>
-<h3>Installation</h3>
-<p>You can install Mextron using Cargo:</p>
-<pre><code class="language-bash">cargo install mextron
-</code></pre>
-<h3>Create new project</h3>
-<p>You can initialise a new project using <code>new</code> command.</p>
-<pre><code class="language-bash">mextron new &lt;folder&gt;
-</code></pre>
-<p>You can optionally specify a theme also.</p>
-<pre><code class="language-bash">mextron new &lt;folder&gt; -t pico
-</code></pre>
-<h3>Running Mextron in Dev mode</h3>
-<p>You can run mextron in the dev mode by using the <code>dev</code> mode
-There is also a <code>-w</code> i.e <code>watch</code> feature flag in dev mode for using hot reloading. </p>
-<pre><code class="language-bash">mextron dev -w # If you are in the Project Directory 
-# OR
-mextron dev &lt;INPUT_DIRECTORY&gt; -w # If you wanna specify which folder to run
-</code></pre>
-<h3>Running Mextron in Build mode</h3>
-<p>You can run mextron in the build mode by using the <code>build</code> mode</p>
-<pre><code class="language-bash">mextron build # If you are in the Project Directory 
-# OR
-mextron build &lt;INPUT_DIRECTORY&gt; # If you wanna specify which folder to run
-</code></pre>
-<h3>Features</h3>
+			<article>
+	<header>
+			<p>
+					<small>Written by
+						<a
+							href="https://soumyadipmoni.netlify.app"
+						>Soumyadip Moni</a></small>
+			</p>
+
+			<p><small>19th Nov 2023</small></p>
+	</header>
+
+	<h1>Slice-Helper</h1>
+<p>The SliceHelper is a versatile Handlebars helper designed to extract a portion (slice) of an array or object based on specified start and end indices.</p>
+<p>Parameters:</p>
 <ul>
-<li><input disabled="" type="checkbox" checked=""/>
-Markdown support</li>
-<li><input disabled="" type="checkbox" checked=""/>
-Custom Themes</li>
-<li><input disabled="" type="checkbox" checked=""/>
-Syntax highlighting</li>
-<li><input disabled="" type="checkbox" checked=""/>
-SEO</li>
-<li><input disabled="" type="checkbox" checked=""/>
-Custom Metadata Passthrough</li>
+<li>Array: The array or object from which to extract the slice.</li>
+<li>Start: The starting index of the slice.</li>
+<li>End: The ending index of the slice.</li>
 </ul>
-<h3>Project Structure</h3>
-<p>The following folder structure is expected by Mextron:</p>
-<pre><code>.
-├── pages
-│  ├── about
-│  │  └── page.md
-│  ├── blog
-│  │  ├── page.md
-│  │  └── why-learn-rust.md
-│  └── page.md
-├── public
-│  ├── favicon.ico
-│  ├── flamethrower.js
-│  └── images
-│     └── og.png
-├── Settings.toml
-└── theme
-   ├── app.hbs
-   ├── blog.hbs
-   ├── global.css
-   └── post.hbs
+<p>Usage Example:</p>
+<pre><code class="language-rust">{{#slice data.array 1 4}}
+  &lt;!-- Content to be displayed for each item in the slice --&gt;
+{{/slice}}
 </code></pre>
-<p>The <code>docs</code> folder is the input directory of the project and is always specified while running dev server or building. You can specify a different input directory like this:</p>
-<pre><code class="language-bash">mextron dev &lt;input-dir-path&gt;
+<h2>Description</h2>
+<p>The SliceHelper is a powerful tool for working with arrays and objects in Handlebars templates. It intelligently handles both types, providing a seamless way to extract a subset of elements. Here’s how it works:</p>
+<h3>Array Slicing</h3>
+<p>If the provided array is an array (JSON array), the helper extracts a subarray containing elements from the start index to the end index (inclusive).
+Each element in the subarray is made available within the block, allowing you to render content for each item.
+Object Slicing:</p>
+<p>If the provided array is an object (JSON object), the helper extracts a new object containing key-value pairs from the start index to the end index (inclusive).
+The block is executed for each key-value pair in the sliced object, providing flexibility in rendering content.
+Error Handling:</p>
+<p>The helper performs robust error checking to ensure that the necessary parameters are provided and that the indices are valid.
+If any errors occur during the process, such as the absence of the array or incorrect indices, the helper returns a RenderError with an appropriate message.</p>
+<h3>Example Usage</h3>
+<p>Consider having a JSON array data.array:</p>
+<pre><code class="language-rust">{
+  &quot;array&quot;: [10, 20, 30, 40, 50, 60]
+}
 </code></pre>
-<ul>
-<li>The <code>Settings.toml</code> file contains the settings of the website, you can customize the website by changing the values in this file.</li>
-<li>The <code>public</code> folder contains all the static assets of the website, these files are copied as-is to the output directory.</li>
-<li>The <code>pages</code> folder contains all the Markdown files, this is where you write your content.</li>
-<li>The <code>theme</code> folder contains all site templates and styles. It is written using <a href="https://handlebarsjs.com/guide/">handlebars</a> syntax.</li>
-<li>The <code>global.css</code> file contains the global CSS of the website, you can write your own CSS in this file.</li>
-</ul>
-<h3>Building custom pages</h3>
-<p>A great example would be a blog index page where you show a list of posts and link to them. This can be achieved by accessing the site directory that is passed to every page.
-The site directory can be accessed through the root object, this is available in every page and it represents the entire site structure including its metadata, so I can render a blog index page like this:</p>
-<p>A custom template say <code>blog</code>, with lists all pages under <code>blog</code> folder.</p>
-<pre><code class="language-handlebars">&lt;ul&gt;
-	{{#each root.blog}}
-		{{#if (not (eq @key &quot;_self&quot;))}}
-			&lt;hgroup&gt;
-				&lt;h4&gt;&lt;a href=&quot;{{@key}}/&quot;&gt;{{this.title}}&lt;/a&gt;&lt;/h4&gt;
-				&lt;h2&gt;{{this.author}}&lt;/h2&gt;
-			&lt;/hgroup&gt;
-		{{/if}}
-	{{/each}}
-&lt;/ul&gt;
+<p>You can use the SliceHelper to extract a subset of this array in your Handlebars template:</p>
+<pre><code class="language-rust">{{#slice data.array 1 4}}
+  &lt;!-- Content to be displayed for each item in the slice --&gt;
+{{/slice}}
 </code></pre>
-<p>Then define a new page under blog folder and specify the template as <code>blog</code> which we have created as shown above.</p>
-<pre><code class="language-md">--
-template: blog
-title: ~/Mextron/blog
---
-
-### This is a blog index
+<p>This example would output:</p>
+<pre><code class="language-rust">20
+30
+40
 </code></pre>
-<h2>The Settings file</h2>
-<p>The <code>Settings.toml</code> file contains the settings of the website, you can customize the website by changing the values in this file.</p>
-<pre><code class="language-toml">[dev]
-port = 3000 # The port on which the dev server runs
-ws_port = 3001 # The port on which the dev server websocket runs, for hot reloading
+<h3>Conclusion</h3>
+<p>The SliceHelper simplifies the process of working with array and object slices in Handlebars templates, offering a clean and efficient solution for scenarios where you need to display or manipulate specific subsets of data. Incorporate this helper into your projects to enhance the flexibility of your templates.</p>
 
-[site]
-script_urls = [] # List of script urls to be included in the site
-style_urls = [ # List of style urls to be included in the site
-  'https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css',
-  'https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css',
-]
 
-[meta]
-title = &quot;~/Mextron&quot; # The title of the website
-description = &quot;Blazing fast static site generator written in Rust&quot; # The description of the website
-og_image_url = &quot;https://mextron.vercel.app/images/og.png&quot; # The og image url of the website
-base_url = &quot;https://mextron.vercel.app&quot; # The base url of the website, used for building sitemap
-
-[navigation] # The navigation links of the website
-links = [
-  { label = &quot;~/&quot;, url = &quot;/&quot; },
-  { label = &quot;GitHub&quot;, url = &quot;https://github.com/AvaterClasher/mextron&quot; },
-  { label = &quot;Blog&quot;, url = &quot;/blog/&quot; },
-  { label = &quot;About&quot;, url = &quot;/about/&quot; },
-]
-
-[data] # The data to be passed to every page, can be accessed using `data` object
-author = &quot;Soumyadip Moni&quot;
-author_link = &quot;https://github.com/AvaterClasher&quot;
-
-[remote_data] # The remote data to be fetched and passed to every page, can be accessed using `remote_data` object
-repo_meta = &quot;https://api.github.com/repos/AvaterClasher/mextron&quot; # The url of the remote data
-</code></pre>
-<h2>Handlebars Helpers</h2>
-<p>Mextron provides a few handlebars helpers to make your life easier. This project uses <a href="https://crates.io/crates/handlebars">handlebars-rust</a> and hence all the helpers provided by it are available. Apart from that, Mextron provides the following helpers:</p>
-<ul>
-<li><code>slice</code>: Slices an array and returns the sliced array.</li>
-<li><code>sort-by</code>: Sorts an array of objects by a key.</li>
-<li><code>format-date</code>: Formats a date using the given format.</li>
-<li><code>stringify</code>: Converts a value to string, this is useful for debugging.</li>
-</ul>
-<p>You can find examples of these helpers in the <a href="https://mextron.vercel.app/blog">demo project</a>.</p>
-<h2>Deployment</h2>
-<p>You can build the site using the build command:</p>
-<pre><code class="language-bash">mextron build &lt;input-dir-path&gt;
-</code></pre>
-<p>The build outputs are saved to <code>_site</code> folder. So, you can deploy the website by copying the <code>_site</code> folder to your web server. You can also use GitHub pages to host your website. Here is an example GitHub action to deploy your website to GitHub pages:</p>
-<pre><code class="language-yaml"># Simple workflow for deploying static content to GitHub Pages
-name: Publish to Pages
-
-on:
-    # Runs on pushes targeting the default branch
-    push:
-        branches: [&quot;master&quot;]
-
-    # Allows you to run this workflow manually from the Actions tab
-    workflow_dispatch:
-
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-    contents: read
-    pages: write
-    id-token: write
-
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-    group: &quot;pages&quot;
-    cancel-in-progress: false
-
-jobs:
-    # Single deploy job since we're just deploying
-    deploy:
-        environment:
-            name: github-pages
-            url: ${{ steps.deployment.outputs.page_url }}
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v3
-            - name: Setup Pages
-              uses: actions/configure-pages@v3
-            - name: Install
-              run: cargo install mextron
-            - name: Build
-              run: mextron build src # Replace src with your input directory
-            - name: Upload artifact
-              uses: actions/upload-pages-artifact@v1
-              with:
-                  # Upload entire repository
-                  path: &quot;./_site&quot;
-            - name: Deploy to GitHub Pages
-              id: deployment
-              uses: actions/deploy-pages@v2
-</code></pre>
-<h1>LICENSE</h1>
-<p>You can find the license <a href="https://github.com/AvaterClasher/mextron/blob/master/LICENSE">here</a>.</p>
-
+</article>
 
 		</main>
 		<footer class="container">

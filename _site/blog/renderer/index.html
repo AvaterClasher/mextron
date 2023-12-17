@@ -78,218 +78,204 @@ code {
 			</nav>
 
 			<hgroup>
-					<h1>Mextron</h1>
-					<h2>Blazing fast static site generator written in Rust</h2>
+					<h1>Renderer and Parser</h1>
+					<h2></h2>
 			</hgroup>
 
-			<!-- @format -->
-<h1>Mextron</h1>
-<p><img src="https://mextron.vercel.app/images/og.png" alt="Art by Crayon" />
-<a href="https://crates.io/crates/mextron"><img src="https://img.shields.io/crates/v/mextron" alt="crates.io" /></a>
-<img src="https://img.shields.io/crates/d/mextron" alt="Crates.io" />
-<a href="https://github.com/AvaterClasher/mextron/actions/workflows/build_test.yml"><img src="https://github.com/AvaterClasher/mextron/actions/workflows/build_test.yml/badge.svg" alt="Build &amp; test" /></a>
-<a href="https://github.com/AvaterClasher/mextron/actions/workflows/static.yml"><img src="https://github.com/AvaterClasher/mextron/actions/workflows/static.yml/badge.svg" alt="Publish to Pages" /></a></p>
-<p>A blazing fast static site generator in Rust</p>
-<blockquote>
-<p>🚧 This project is currently under development. Expect breaking changes. 🚧</p>
-</blockquote>
-<blockquote>
-<p>🚧 This Project is currently POSIX friendly. For windows please use <a href="https://learn.microsoft.com/en-us/windows/wsl/install">WSL</a>🚧</p>
-</blockquote>
-<p>A sleek and minimalist static site generator written in Rust. Designed with simplicity in mind, Mextron makes website creation a breeze. It supports Markdown files, allowing you to write content with ease.</p>
-<h3>DEMO</h3>
-<p>Here is a live <a href="https://mextron.vercel.app">DEMO</a> my blog is built using Mextron.</p>
-<h3>Installation</h3>
-<p>You can install Mextron using Cargo:</p>
-<pre><code class="language-bash">cargo install mextron
-</code></pre>
-<h3>Create new project</h3>
-<p>You can initialise a new project using <code>new</code> command.</p>
-<pre><code class="language-bash">mextron new &lt;folder&gt;
-</code></pre>
-<p>You can optionally specify a theme also.</p>
-<pre><code class="language-bash">mextron new &lt;folder&gt; -t pico
-</code></pre>
-<h3>Running Mextron in Dev mode</h3>
-<p>You can run mextron in the dev mode by using the <code>dev</code> mode
-There is also a <code>-w</code> i.e <code>watch</code> feature flag in dev mode for using hot reloading. </p>
-<pre><code class="language-bash">mextron dev -w # If you are in the Project Directory 
-# OR
-mextron dev &lt;INPUT_DIRECTORY&gt; -w # If you wanna specify which folder to run
-</code></pre>
-<h3>Running Mextron in Build mode</h3>
-<p>You can run mextron in the build mode by using the <code>build</code> mode</p>
-<pre><code class="language-bash">mextron build # If you are in the Project Directory 
-# OR
-mextron build &lt;INPUT_DIRECTORY&gt; # If you wanna specify which folder to run
-</code></pre>
-<h3>Features</h3>
+			<article>
+	<header>
+			<p>
+					<small>Written by
+						<a
+							href="https://soumyadipmoni.netlify.app"
+						>Soumyadip Moni</a></small>
+			</p>
+
+			<p><small>19th Nov 2023</small></p>
+	</header>
+
+	<h1>How Mextron’s Renderer and Parser kind of works ?</h1>
+<h3><strong>Kind of</strong> because i suck at explaining things 😄</h3>
+<h3>If somebody has a better way of explaining this please contact me 🙏</h3>
+<p>The Rust programming language, known for its performance and safety, is gaining popularity in the web development landscape. In this blog post, we’ll delve into the <code>Render</code> struct and the <code>get_markdown_and_metadata</code> function.</p>
+<h2>The <code>Render</code> Struct</h2>
+<p>The <code>Render</code> struct serves as a key component for rendering content, encapsulating various functionalities that contribute to the dynamic generation of web pages. Let’s break down its main components:</p>
 <ul>
-<li><input disabled="" type="checkbox" checked=""/>
-Markdown support</li>
-<li><input disabled="" type="checkbox" checked=""/>
-Custom Themes</li>
-<li><input disabled="" type="checkbox" checked=""/>
-Syntax highlighting</li>
-<li><input disabled="" type="checkbox" checked=""/>
-SEO</li>
-<li><input disabled="" type="checkbox" checked=""/>
-Custom Metadata Passthrough</li>
+<li><strong>file</strong>: The path to the Markdown file that contains the content to be rendered.</li>
+<li><strong>theme_dir</strong>: The directory where theme-related assets and templates are stored.</li>
+<li><strong>settings</strong>: Configuration settings for the web application.</li>
+<li><strong>cache</strong>: An optional cache for storing and retrieving assets, enhancing performance.</li>
+<li><strong>handlebars</strong>: An instance of the Handlebars templating engine, configured with custom helpers.</li>
 </ul>
-<h3>Project Structure</h3>
-<p>The following folder structure is expected by Mextron:</p>
-<pre><code>.
-├── pages
-│  ├── about
-│  │  └── page.md
-│  ├── blog
-│  │  ├── page.md
-│  │  └── why-learn-rust.md
-│  └── page.md
-├── public
-│  ├── favicon.ico
-│  ├── flamethrower.js
-│  └── images
-│     └── og.png
-├── Settings.toml
-└── theme
-   ├── app.hbs
-   ├── blog.hbs
-   ├── global.css
-   └── post.hbs
+<h2>Initialization and Configuration</h2>
+<p>The <code>Render</code> struct is initialized with essential parameters, including the file path, theme directory, application settings, and an optional cache.</p>
+<h2>Rendering Pages</h2>
+<p>The core functionality of the <code>Render</code> struct lies in its ability to render web pages. The <code>render_page</code> function orchestrates this process by handling Markdown content, metadata extraction, and template rendering. Let’s explore the steps involved:</p>
+<h3>Markdown and Metadata Extraction</h3>
+<p>The <code>get_markdown_and_metadata</code> function reads the content of the Markdown file and uses regular expressions to extract both the metadata and the Markdown body. If metadata is present, it is parsed into a YAML format for further use.</p>
+<h3>Body Rendering</h3>
+<p>The <code>render_body</code> function takes the Markdown body, metadata, and site directory information to render the body content. It checks if a specific template is defined in the metadata and, if so, uses it to render the body. This provides flexibility in customizing the rendering process based on individual page requirements.</p>
+<h3>Template Rendering</h3>
+<p>The final rendering step occurs in the <code>render_page</code> function. The Handlebars templating engine is employed to merge data, metadata, and other relevant information into a cohesive HTML output. This includes global styles, scripts, and various site-specific settings.</p>
+<p>Certainly! Let’s delve deeper into the <code>render_page</code> function, examining its steps and the logic behind each part of the process.</p>
+<h3>Rendering Pages with <code>render_page</code></h3>
+<p>The <code>render_page</code> function is the heart of the <code>Render</code> struct, orchestrating the rendering process for web pages. It takes the site directory information as a parameter and returns the final HTML output as a <code>Result&lt;String&gt;</code>.</p>
+<pre><code class="language-rust">pub fn render_page(&amp;self, site_directory: &amp;serde_yaml::Value) -&gt; Result&lt;String&gt; {
+    // Step 1: Extract Markdown content and metadata
+    let (metadata, markdown) = self.get_markdown_and_metadata()?;
+
+    // Step 2: Parse metadata into YAML format
+    let metadata = if let Some(metadata) = metadata {
+        let metadata = utils::parse_string_to_yaml(&amp;metadata)?;
+        Some(metadata)
+    } else {
+        None
+    };
+
+    // Step 3: Render the body content
+    let content = if let Some(metadata) = &amp;metadata {
+        self.render_body(&amp;markdown, metadata, site_directory)
+            .with_context(|| format!(&quot;Failed to render page: {}&quot;, self.file))?
+    } else {
+        markdown
+    };
+
+    // Step 4: Render the entire page using Handlebars template
+    let html = self.handlebars.render_template(
+        &amp;self.get_template(&quot;app&quot;).context(&quot;Failed to get template&quot;)?,
+        &amp;AppRenderData {
+            title: self.settings.meta.title.clone(),
+            description: self.settings.meta.description.clone(),
+            open_graph_tags: seo::generate_open_graph_tags(&amp;self.settings)?,
+            content,
+            styles: self.get_global_styles()?,
+            scripts: self.get_global_scripts()?,
+            links: self.settings.navigation.links.clone(),
+            page_metadata: metadata,
+            data: self.settings.data.clone(),
+            remote_data: self.get_remote_data()?,
+        },
+    )
+    .context(&quot;Failed to render page&quot;)?;
+
+    // Step 5: Return the final HTML output
+    Ok(html)
+}
 </code></pre>
-<p>The <code>docs</code> folder is the input directory of the project and is always specified while running dev server or building. You can specify a different input directory like this:</p>
-<pre><code class="language-bash">mextron dev &lt;input-dir-path&gt;
+<h3>Step-by-Step Breakdown of Render_page()</h3>
+<h4>Step 1: Extract Markdown content and metadata</h4>
+<p>The function starts by calling the <code>get_markdown_and_metadata</code> method to extract both the metadata and the Markdown content from the file.</p>
+<pre><code class="language-rust">let (metadata, markdown) = self.get_markdown_and_metadata()?;
 </code></pre>
-<ul>
-<li>The <code>Settings.toml</code> file contains the settings of the website, you can customize the website by changing the values in this file.</li>
-<li>The <code>public</code> folder contains all the static assets of the website, these files are copied as-is to the output directory.</li>
-<li>The <code>pages</code> folder contains all the Markdown files, this is where you write your content.</li>
-<li>The <code>theme</code> folder contains all site templates and styles. It is written using <a href="https://handlebarsjs.com/guide/">handlebars</a> syntax.</li>
-<li>The <code>global.css</code> file contains the global CSS of the website, you can write your own CSS in this file.</li>
-</ul>
-<h3>Building custom pages</h3>
-<p>A great example would be a blog index page where you show a list of posts and link to them. This can be achieved by accessing the site directory that is passed to every page.
-The site directory can be accessed through the root object, this is available in every page and it represents the entire site structure including its metadata, so I can render a blog index page like this:</p>
-<p>A custom template say <code>blog</code>, with lists all pages under <code>blog</code> folder.</p>
-<pre><code class="language-handlebars">&lt;ul&gt;
-	{{#each root.blog}}
-		{{#if (not (eq @key &quot;_self&quot;))}}
-			&lt;hgroup&gt;
-				&lt;h4&gt;&lt;a href=&quot;{{@key}}/&quot;&gt;{{this.title}}&lt;/a&gt;&lt;/h4&gt;
-				&lt;h2&gt;{{this.author}}&lt;/h2&gt;
-			&lt;/hgroup&gt;
-		{{/if}}
-	{{/each}}
-&lt;/ul&gt;
+<h4>Step 2: Parse metadata into YAML format</h4>
+<p>If metadata is present, it is parsed into a YAML format for further processing. The <code>utils::parse_string_to_yaml</code> function is used for this conversion.</p>
+<pre><code class="language-rust">let metadata = if let Some(metadata) = metadata {
+    let metadata = utils::parse_string_to_yaml(&amp;metadata)?;
+    Some(metadata)
+} else {
+    None
+};
 </code></pre>
-<p>Then define a new page under blog folder and specify the template as <code>blog</code> which we have created as shown above.</p>
-<pre><code class="language-md">--
-template: blog
-title: ~/Mextron/blog
---
-
-### This is a blog index
+<h4>Step 3: Render the body content</h4>
+<p>The function then proceeds to render the body content using the <code>render_body</code> method. This method takes the Markdown body, parsed metadata, and site directory information as parameters.</p>
+<pre><code class="language-rust">let content = if let Some(metadata) = &amp;metadata {
+    self.render_body(&amp;markdown, metadata, site_directory)
+        .with_context(|| format!(&quot;Failed to render page: {}&quot;, self.file))?
+} else {
+    markdown
+};
 </code></pre>
-<h2>The Settings file</h2>
-<p>The <code>Settings.toml</code> file contains the settings of the website, you can customize the website by changing the values in this file.</p>
-<pre><code class="language-toml">[dev]
-port = 3000 # The port on which the dev server runs
-ws_port = 3001 # The port on which the dev server websocket runs, for hot reloading
-
-[site]
-script_urls = [] # List of script urls to be included in the site
-style_urls = [ # List of style urls to be included in the site
-  'https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css',
-  'https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css',
-]
-
-[meta]
-title = &quot;~/Mextron&quot; # The title of the website
-description = &quot;Blazing fast static site generator written in Rust&quot; # The description of the website
-og_image_url = &quot;https://mextron.vercel.app/images/og.png&quot; # The og image url of the website
-base_url = &quot;https://mextron.vercel.app&quot; # The base url of the website, used for building sitemap
-
-[navigation] # The navigation links of the website
-links = [
-  { label = &quot;~/&quot;, url = &quot;/&quot; },
-  { label = &quot;GitHub&quot;, url = &quot;https://github.com/AvaterClasher/mextron&quot; },
-  { label = &quot;Blog&quot;, url = &quot;/blog/&quot; },
-  { label = &quot;About&quot;, url = &quot;/about/&quot; },
-]
-
-[data] # The data to be passed to every page, can be accessed using `data` object
-author = &quot;Soumyadip Moni&quot;
-author_link = &quot;https://github.com/AvaterClasher&quot;
-
-[remote_data] # The remote data to be fetched and passed to every page, can be accessed using `remote_data` object
-repo_meta = &quot;https://api.github.com/repos/AvaterClasher/mextron&quot; # The url of the remote data
+<h4>Step 4: Render the entire page using Handlebars template</h4>
+<p>The next step involves rendering the entire page using the Handlebars templating engine. The <code>AppRenderData</code> struct is populated with various data, including the title, description, open graph tags, content, styles, scripts, links, metadata, and remote data.</p>
+<pre><code class="language-rust">let html = self.handlebars.render_template(
+    &amp;self.get_template(&quot;app&quot;).context(&quot;Failed to get template&quot;)?,
+    &amp;AppRenderData {
+        title: self.settings.meta.title.clone(),
+        description: self.settings.meta.description.clone(),
+        open_graph_tags: seo::generate_open_graph_tags(&amp;self.settings)?,
+        content,
+        styles: self.get_global_styles()?,
+        scripts: self.get_global_scripts()?,
+        links: self.settings.navigation.links.clone(),
+        page_metadata: metadata,
+        data: self.settings.data.clone(),
+        remote_data: self.get_remote_data()?,
+    },
+)
+.context(&quot;Failed to render page&quot;)?;
 </code></pre>
-<h2>Handlebars Helpers</h2>
-<p>Mextron provides a few handlebars helpers to make your life easier. This project uses <a href="https://crates.io/crates/handlebars">handlebars-rust</a> and hence all the helpers provided by it are available. Apart from that, Mextron provides the following helpers:</p>
-<ul>
-<li><code>slice</code>: Slices an array and returns the sliced array.</li>
-<li><code>sort-by</code>: Sorts an array of objects by a key.</li>
-<li><code>format-date</code>: Formats a date using the given format.</li>
-<li><code>stringify</code>: Converts a value to string, this is useful for debugging.</li>
-</ul>
-<p>You can find examples of these helpers in the <a href="https://mextron.vercel.app/blog">demo project</a>.</p>
-<h2>Deployment</h2>
-<p>You can build the site using the build command:</p>
-<pre><code class="language-bash">mextron build &lt;input-dir-path&gt;
+<h4>Step 5: Return the final HTML output</h4>
+<p>Finally, the function returns the rendered HTML as a <code>Result&lt;String&gt;</code>.</p>
+<pre><code class="language-rust">Ok(html)
 </code></pre>
-<p>The build outputs are saved to <code>_site</code> folder. So, you can deploy the website by copying the <code>_site</code> folder to your web server. You can also use GitHub pages to host your website. Here is an example GitHub action to deploy your website to GitHub pages:</p>
-<pre><code class="language-yaml"># Simple workflow for deploying static content to GitHub Pages
-name: Publish to Pages
+<h2>The Markdown and Metadata parser</h2>
+<p>Certainly! Let’s take a closer look at the <code>get_markdown_and_metadata</code> function, which is responsible for reading the content of a Markdown file, extracting metadata, and separating it from the Markdown body.</p>
+<pre><code class="language-rust">fn get_markdown_and_metadata(&amp;self) -&gt; Result&lt;(Option&lt;String&gt;, String)&gt; {
+    // Step 1: Read the content of the Markdown file
+    let markdown = fs::read_to_string(&amp;self.file)?;
 
-on:
-    # Runs on pushes targeting the default branch
-    push:
-        branches: [&quot;master&quot;]
+    // Step 2: Define a regular expression to capture metadata
+    let metadata_regex = Regex::new(r&quot;^(?s)---(.*?)---(.*)&quot;)
+        .context(&quot;Failed to parse metadata from markdown file&quot;)?;
 
-    # Allows you to run this workflow manually from the Actions tab
-    workflow_dispatch:
+    // Step 3: Attempt to match the metadata regex with the Markdown content
+    if let Some(captures) = metadata_regex.captures(&amp;markdown) {
+        // Step 4: Extract metadata and Markdown body
+        let metadata = captures
+            .get(1)
+            .with_context(|| format!(&quot;Failed to get metadata from captures: {}&quot;, self.file))?
+            .as_str();
+        let markdown_body = captures
+            .get(2)
+            .with_context(|| format!(&quot;Failed to get markdown from captures: {}&quot;, self.file))?
+            .as_str();
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-    contents: read
-    pages: write
-    id-token: write
-
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-    group: &quot;pages&quot;
-    cancel-in-progress: false
-
-jobs:
-    # Single deploy job since we're just deploying
-    deploy:
-        environment:
-            name: github-pages
-            url: ${{ steps.deployment.outputs.page_url }}
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v3
-            - name: Setup Pages
-              uses: actions/configure-pages@v3
-            - name: Install
-              run: cargo install mextron
-            - name: Build
-              run: mextron build src # Replace src with your input directory
-            - name: Upload artifact
-              uses: actions/upload-pages-artifact@v1
-              with:
-                  # Upload entire repository
-                  path: &quot;./_site&quot;
-            - name: Deploy to GitHub Pages
-              id: deployment
-              uses: actions/deploy-pages@v2
+        // Step 5: Return metadata and Markdown body
+        Ok((Some(metadata.to_string()), markdown_body.to_string()))
+    } else {
+        // Step 6: If no metadata is found, return Markdown content without metadata
+        Ok((None, markdown))
+    }
+}
 </code></pre>
-<h1>LICENSE</h1>
-<p>You can find the license <a href="https://github.com/AvaterClasher/mextron/blob/master/LICENSE">here</a>.</p>
+<h3>Step-by-Step Breakdown of get_markdown_and_metadata()</h3>
+<h4>Step 1: Read the content of the Markdown file</h4>
+<pre><code class="language-rust">let markdown = fs::read_to_string(&amp;self.file)?;
+</code></pre>
+<p>This step uses the <code>fs::read_to_string</code> function to read the content of the Markdown file specified by <code>self.file</code>. The result is a <code>String</code> containing the entire content of the Markdown file.</p>
+<h4>Step 2: Define a regular expression to capture metadata</h4>
+<pre><code class="language-rust">let metadata_regex = Regex::new(r&quot;^(?s)---(.*?)---(.*)&quot;)
+    .context(&quot;Failed to parse metadata from markdown file&quot;)?;
+</code></pre>
+<p>A regular expression (<code>metadata_regex</code>) is defined using the <code>Regex::new</code> function. This regex is designed to capture metadata enclosed between <code>---</code> delimiters at the beginning of the Markdown content. The <code>(?s)</code> flag allows the dot (<code>.</code>) in the regex to match newline characters.</p>
+<h4>Step 3: Attempt to match the metadata regex with the Markdown content</h4>
+<pre><code class="language-rust">if let Some(captures) = metadata_regex.captures(&amp;markdown) {
+</code></pre>
+<p>This step attempts to match the defined regular expression (<code>metadata_regex</code>) with the entire content of the Markdown file. If a match is found, the <code>captures</code> variable will contain information about the matched groups.</p>
+<h4>Step 4: Extract metadata and Markdown body</h4>
+<pre><code class="language-rust">let metadata = captures
+    .get(1)
+    .with_context(|| format!(&quot;Failed to get metadata from captures: {}&quot;, self.file))?
+    .as_str();
+let markdown_body = captures
+    .get(2)
+    .with_context(|| format!(&quot;Failed to get markdown from captures: {}&quot;, self.file))?
+    .as_str();
+</code></pre>
+<p>If a match is found, this step extracts the metadata and Markdown body from the captured groups. The <code>captures.get(1)</code> corresponds to the first capturing group (metadata), and <code>captures.get(2)</code> corresponds to the second capturing group (Markdown body). The <code>as_str()</code> method converts the captured values to string slices.</p>
+<h4>Step 5: Return metadata and Markdown body</h4>
+<pre><code class="language-rust">Ok((Some(metadata.to_string()), markdown_body.to_string()))
+</code></pre>
+<p>If metadata and Markdown body are successfully extracted, a tuple containing <code>Some(metadata)</code> and <code>markdown_body</code> is returned. Both values are converted to <code>String</code> for consistency.</p>
+<h4>Step 6: If no metadata is found, return Markdown content without metadata</h4>
+<pre><code class="language-rust">Ok((None, markdown))
+</code></pre>
+<p>If the regular expression does not match (no metadata found), this step returns a tuple with <code>None</code> for metadata and the entire Markdown content as the Markdown body.</p>
+<h2>Conclusion</h2>
+<p>By exploring the inner workings of the <code>Render</code> struct, we gain insights into how Rust’s strengths in performance and safety extend to the domain of web development.</p>
 
+
+</article>
 
 		</main>
 		<footer class="container">
